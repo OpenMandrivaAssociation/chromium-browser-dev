@@ -18,40 +18,6 @@
        'targets': [
          {
            'target_name': 'common_audio_neon',
---- chromium-44.0.2376.0/third_party/webrtc/common_audio/fir_filter.cc.0018~	2015-04-21 05:21:18.000000000 +0200
-+++ chromium-44.0.2376.0/third_party/webrtc/common_audio/fir_filter.cc	2015-04-24 17:01:08.790972325 +0200
-@@ -62,13 +62,13 @@ FIRFilter* FIRFilter::Create(const float
-   filter =
-       new FIRFilterNEON(coefficients, coefficients_length, max_input_length);
- #else
--  // ARM CPU detection required.
--  if (WebRtc_GetCPUFeaturesARM() & kCPUFeatureNEON) {
--    filter =
--        new FIRFilterNEON(coefficients, coefficients_length, max_input_length);
--  } else {
-+//  // ARM CPU detection required.
-+//  if (WebRtc_GetCPUFeaturesARM() & kCPUFeatureNEON) {
-+//    filter =
-+//        new FIRFilterNEON(coefficients, coefficients_length, max_input_length);
-+//  } else {
-     filter = new FIRFilterC(coefficients, coefficients_length);
--  }
-+//  }
- #endif
- #else
-   filter = new FIRFilterC(coefficients, coefficients_length);
---- chromium-44.0.2376.0/third_party/webrtc/common_audio/resampler/sinc_resampler.cc.0018~	2015-04-21 05:21:18.000000000 +0200
-+++ chromium-44.0.2376.0/third_party/webrtc/common_audio/resampler/sinc_resampler.cc	2015-04-24 17:01:08.790972325 +0200
-@@ -138,8 +138,7 @@ void SincResampler::InitializeCPUSpecifi
- #define CONVOLVE_FUNC convolve_proc_
- 
- void SincResampler::InitializeCPUSpecificFeatures() {
--  convolve_proc_ = WebRtc_GetCPUFeaturesARM() & kCPUFeatureNEON ?
--      Convolve_NEON : Convolve_C;
-+  convolve_proc_ = Convolve_C;
- }
- #endif
- #else
 --- chromium-44.0.2376.0/third_party/webrtc/system_wrappers/source/cpu_features.cc.0018~	2015-04-21 05:21:19.000000000 +0200
 +++ chromium-44.0.2376.0/third_party/webrtc/system_wrappers/source/cpu_features.cc	2015-04-24 17:01:08.790972325 +0200
 @@ -18,6 +18,47 @@
