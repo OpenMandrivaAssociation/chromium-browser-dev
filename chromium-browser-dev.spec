@@ -4,7 +4,7 @@
 %define _src %{_topdir}/SOURCES
 # Valid current basever numbers can be found at
 # http://omahaproxy.appspot.com/
-%define basever 45.0.2438.3
+%define basever 49.0.2593.0
 %define	debug_package %nil
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys
@@ -35,7 +35,7 @@ Source2: 	chromium-browser-dev.desktop
 Source3:	master_preferences
 
 Patch0:         chromium-30.0.1599.66-master-prefs-path.patch
-#Patch1:		chromium-36.0.1985.143-compile.patch
+Patch1:		workaround-bug-515917.patch
 #Patch2:		chromium-fix-arm-sysroot.patch
 #Patch3:		chromium-fix-arm-icu.patch
 %if %mdvver >= 201500
@@ -143,7 +143,7 @@ echo "%{revision}" > build/LASTCHANGE.in
 
 # Hard code extra version
 FILE=chrome/common/chrome_version_info_posix.cc
-sed -i.orig -e 's/getenv("CHROME_VERSION_EXTRA")/"%{product_vendor} %{product_version}"/' $FILE
+#sed -i.orig -e 's/getenv("CHROME_VERSION_EXTRA")/"%{product_vendor} %{product_version}"/' $FILE
 cmp $FILE $FILE.orig && exit 1
 
 # remove bundle v8
@@ -190,6 +190,8 @@ export PATH=`pwd`:$PATH
 # get resources for high dpi and touch
 export GYP_DEFINES="use_aura=1 enable_hidpi=1 enable_touch_ui=1 clang_use_chrome_plugins=0 use_hotwording=0"
 
+# We want to use our version...
+rm -rf third_party/binutils
 
 export GYP_GENERATORS=ninja
 build/gyp_chromium --depth=. \
@@ -205,7 +207,7 @@ build/gyp_chromium --depth=. \
         -Duse_gconf=0 \
         -Dsysroot= \
 	-Dclang=1 \
-	-Dhost_clang=0 \
+	-Dhost_clang=1 \
         -Dwerror='' \
 	-Ddisable_fatal_linker_warnings=1 \
 	-Dsystem_libdir=%{_lib} \
@@ -224,6 +226,7 @@ build/gyp_chromium --depth=. \
         -Duse_system_libjpeg=1 \
 	-Duse_system_harfbuzz=1 \
         -Duse_system_libevent=1 \
+	-Duse_system_binutils=1 \
 	-Ddisable_newlib_untar=1 \
 	-Duse_system_yasm=1 \
 	-Duse_system_libwebp=1 \
