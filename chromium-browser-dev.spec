@@ -4,7 +4,7 @@
 %define _src %{_topdir}/SOURCES
 # Valid current basever numbers can be found at
 # http://omahaproxy.appspot.com/
-%define basever 49.0.2593.0
+%define basever 49.0.2612.0
 %define	debug_package %nil
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys
@@ -54,6 +54,8 @@ Patch15:        chromium-25.0.1364.172-sandbox-pie.patch
 Patch17:	arm.patch
 Patch18:	arm-neon.patch
 Patch19:	fix-ld-on-arm.patch
+
+Patch20:	chromium-49.0.2612.0-compile.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
