@@ -4,7 +4,7 @@
 %define _src %{_topdir}/SOURCES
 # Valid current basever numbers can be found at
 # http://omahaproxy.appspot.com/
-%define basever 49.0.2612.0
+%define basever 50.0.2661.11
 %define	debug_package %nil
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys
@@ -56,6 +56,7 @@ Patch18:	arm-neon.patch
 Patch19:	fix-ld-on-arm.patch
 
 Patch20:	chromium-49.0.2612.0-compile.patch
+Patch21:	chromium-link-libatomic.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
@@ -107,6 +108,7 @@ BuildRequires: 	pkgconfig(libusb-1.0)
 BuildRequires:  speech-dispatcher-devel
 BuildRequires:  pkgconfig(libpci)
 BuildRequires:	pkgconfig(libexif)
+BuildRequires:	%{mklibname -d -s atomic}
 %if %mdvver >= 201500
 BuildRequires:	python2
 %else
@@ -276,7 +278,7 @@ build/gyp_chromium --depth=. \
         -Dgoogle_default_client_id=%{google_default_client_id} \
         -Dgoogle_default_client_secret=%{google_default_client_secret}
 # Note: DON'T use system sqlite (3.7.3) -- it breaks history search
-# As of 36.0.1985.143, use_system_icu breaks the build.
+# As of 50.0.2661.11, use_system_icu breaks the build.
 # gyp: Duplicate target definitions for /home/bero/abf/chromium-browser-stable/BUILD/chromium-36.0.1985.143/third_party/icu/icu.gyp:icudata#target
 # This should be enabled again once the gyp files are fixed.
 ninja -C out/Release chrome chrome_sandbox chromedriver
