@@ -4,7 +4,7 @@
 %define _src %{_topdir}/SOURCES
 # Valid current basever numbers can be found at
 # http://omahaproxy.appspot.com/
-%define basever 51.0.2700.0
+%define basever 52.0.2716.0
 %define	debug_package %nil
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys
@@ -36,7 +36,6 @@ Source3:	master_preferences
 
 Patch0:         chromium-30.0.1599.66-master-prefs-path.patch
 Patch1:		workaround-bug-515917.patch
-Patch2:		chromium-51.0.2687.0-compile.patch
 #Patch2:		chromium-fix-arm-sysroot.patch
 #Patch3:		chromium-fix-arm-icu.patch
 %if %mdvver >= 201500
