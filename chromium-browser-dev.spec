@@ -198,6 +198,11 @@ export GYP_DEFINES="use_aura=1 enable_hidpi=1 enable_touch_ui=1 clang_use_chrome
 # We want to use our version...
 rm -rf third_party/binutils
 
+# FIXME
+# -Duse_system_libjpeg=1 \
+# Broken as of 52.0.2743.6, causes unresolved symbols
+# chromium_jpeg_* in external/pdfium tree
+
 export GYP_GENERATORS=ninja
 build/gyp_chromium --depth=. \
 	-Dbuild_ffmpegsumo=1 \
@@ -228,7 +233,7 @@ build/gyp_chromium --depth=. \
 	-Duse_system_jsoncpp=1 \
         -Duse_system_xdg_utils=1 \
         -Duse_system_libpng=1 \
-        -Duse_system_libjpeg=1 \
+        -Duse_system_libjpeg=0 \
 	-Duse_system_harfbuzz=1 \
         -Duse_system_libevent=1 \
 	-Duse_system_binutils=1 \
