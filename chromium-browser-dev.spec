@@ -4,7 +4,7 @@
 %define _src %{_topdir}/SOURCES
 # Valid current basever numbers can be found at
 # http://omahaproxy.appspot.com/
-%define basever 52.0.2743.6
+%define basever 53.0.2763.0
 %define	debug_package %nil
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys
@@ -42,7 +42,6 @@ Patch1:		workaround-bug-515917.patch
 # Don't use clang's integrated as while trying to check the version of gas
 #Patch4:		chromium-36.0.1985.143-clang-no-integrated-as.patch
 %endif
-Patch5:		chromium-52.0.2743.6-clang.patch
 
 # PATCH-FIX-OPENSUSE patches in system glew library
 Patch13:        chromium-25.0.1364.172-system-glew.patch
@@ -58,6 +57,8 @@ Patch19:	fix-ld-on-arm.patch
 
 Patch20:	chromium-49.0.2612.0-compile.patch
 Patch21:	chromium-link-libatomic.patch
+Patch22:	chromium-53.0.2756.0-lto-clang.patch
+Patch23:	chromium-53.0.2756.0-compile.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
@@ -178,7 +179,9 @@ mkdir -p bfd
 ln -s %{_bindir}/ld.bfd bfd/ld
 export PATH=$PWD/bfd:$PATH
 # Use linker flags to reduce memory consumption
-%global ldflags %{ldflags} -fuse-ld=bfd -Wl,--no-keep-memory -Wl,--reduce-memory-overheads
+%global ldflags %{ldflags} -flto -Wl,--no-keep-memory -Wl,--reduce-memory-overheads
+%else
+%global ldflags %{ldflags} -flto
 %endif
 
 export CC=clang
@@ -279,7 +282,13 @@ build/gyp_chromium --depth=. \
 	-Darm_neon_optional=0 \
 	-Darm_version=7 \
 	-Darmv7=1 \
+%else
+	-Drelease_extra_cflags="%optflags" \
 %endif
+	-Duse_lto=1 \
+	-Duse_lto_o2=1 \
+	-Duse_aura=1 \
+	-Duse_gtk3=1 \
         -Dgoogle_api_key=%{google_api_key} \
         -Dgoogle_default_client_id=%{google_default_client_id} \
         -Dgoogle_default_client_secret=%{google_default_client_secret}
