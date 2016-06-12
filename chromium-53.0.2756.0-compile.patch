@@ -1,0 +1,11 @@
+--- chromium-53.0.2756.0/components/safe_browsing_db/v4_local_database_manager.cc.omv~	2016-06-03 13:29:03.051601935 +0200
++++ chromium-53.0.2756.0/components/safe_browsing_db/v4_local_database_manager.cc	2016-06-03 13:29:14.343554052 +0200
+@@ -188,7 +188,7 @@ void V4LocalDatabaseManager::SetupDataba
+   }
+ 
+   // TODO(vakh): list_info_map should probably be a hard-coded map.
+-  ListInfoMap list_info_map;
++  ListInfoMap list_info_map {};
+ 
+   // Do not create the database on the IO thread since this may be an expensive
+   // operation. Instead, do that on the task_runner and when the new database
