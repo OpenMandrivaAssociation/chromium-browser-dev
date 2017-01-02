@@ -1,11 +1,22 @@
+%define channel dev
+%if "%{channel}" == "stable"
+%define namesuffix %{nil}
+%else
+%define namesuffix -%{channel}
+%endif
+
+# eol 'fix' corrupts some .bin files
+%define dont_fix_eol 1
+
 #define v8_ver 3.12.8
 %define crname chromium-browser
 %define _crdir %{_libdir}/%{crname}
 %define _src %{_topdir}/SOURCES
-# Valid current basever numbers can be found at
-# http://omahaproxy.appspot.com/
-%define basever 53.0.2763.0
 %define	debug_package %nil
+
+%ifarch %ix86
+%define _build_pkgcheck_set %{nil}
+%endif
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys
 # OpenMandriva key, id and secret
@@ -15,6 +26,19 @@
 %define    google_default_client_secret RDdr-pHq2gStY4uw0m-zxXeo
 
 %bcond_with	plf
+# Chromium breaks on wayland, hidpi, and colors with gtk3 enabled.
+# But as of 60.0.3112.78 and .90, building with gtk2 is broken
+%bcond_without	gtk3
+# crisb - ozone causes a segfault on startup as of 57.0.2987.133
+%bcond_with	ozone
+%bcond_with	system_icu
+%bcond_without	system_ffmpeg
+# Temporarily broken, cr_z_* symbols used even when we're supposed to use system minizip
+%bcond_with	system_minizip
+# chromium 58 fails with system vpx 1.6.1
+%bcond_with	system_vpx
+%bcond_with	system_harfbuzz
+
 # Always support proprietary codecs
 # or html5 does not work
 %if %{with plf}
@@ -22,43 +46,88 @@
 %define distsuffix plf
 %endif
 
-Name: 		chromium-browser-dev
-Version: 	%basever
+Name: 		chromium-browser-%{channel}
+# Working version numbers can be found at
+# http://omahaproxy.appspot.com/
+Version: 	64.0.3253.3
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
 License: 	BSD, LGPL
 # From : http://gsdview.appspot.com/chromium-browser-official/
-Source0: 	https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{basever}.tar.xz
+Source0: 	https://commondatastorage.googleapis.com/chromium-browser-official/chromium-%{version}.tar.xz
 Source1: 	chromium-wrapper
-Source2: 	chromium-browser-dev.desktop
+Source2: 	chromium-browser%{namesuffix}.desktop
 Source3:	master_preferences
+# Upstream removed third_party/freetype (GOOD) but still relies on
+# internal freetype headers (BAD)... So we need to put freetype
+# sources back. This is pulled from the last Chromium build that
+# had them.
+Source4:	https://ftp.osuosl.org/pub/blfs/conglomeration/chromium/chromium-freetype.tar.xz
 
-Patch0:         chromium-30.0.1599.66-master-prefs-path.patch
-Patch1:		workaround-bug-515917.patch
-#Patch2:		chromium-fix-arm-sysroot.patch
-#Patch3:		chromium-fix-arm-icu.patch
 %if %mdvver >= 201500
 # Don't use clang's integrated as while trying to check the version of gas
 #Patch4:		chromium-36.0.1985.143-clang-no-integrated-as.patch
 %endif
 
-# PATCH-FIX-OPENSUSE patches in system glew library
-Patch13:        chromium-25.0.1364.172-system-glew.patch
-# PATCH-FIX-OPENSUSE removes build part for courgette
-Patch14:        chromium-25.0.1364.172-no-courgette.patch
-# PATCH-FIX-OPENSUSE Compile the sandbox with -fPIE settings
-Patch15:        chromium-25.0.1364.172-sandbox-pie.patch
+#Patch20:	chromium-last-commit-position-r0.patch
 
-# Debian Patches
-Patch17:	arm.patch
-Patch18:	arm-neon.patch
-Patch19:	fix-ld-on-arm.patch
+### Chromium Fedora Patches ###
+Patch0:         chromium-56.0.2924.87-gcc5.patch
+Patch1:         chromium-45.0.2454.101-linux-path-max.patch
+Patch2:         chromium-55.0.2883.75-addrfix.patch
+Patch4:         chromium-46.0.2490.71-notest.patch
+# Ignore broken nacl open fd counter
+Patch7:         chromium-47.0.2526.80-nacl-ignore-broken-fd-counter.patch
+# Use libusb_interrupt_event_handler from current libusbx (1.0.21-0.1.git448584a)
+Patch9:         chromium-48.0.2564.116-libusb_interrupt_event_handler.patch
+# Ignore deprecations in cups 2.2
+# https://bugs.chromium.org/p/chromium/issues/detail?id=622493
+Patch12:        chromium-55.0.2883.75-cups22.patch
+# Use PIE in the Linux sandbox (from openSUSE via Russian Fedora)
+Patch15:        chromium-55.0.2883.75-sandbox-pie.patch
+# Enable ARM CPU detection for webrtc (from archlinux via Russian Fedora)
+Patch16:        chromium-52.0.2743.82-arm-webrtc.patch
+# Use /etc/chromium for master_prefs
+Patch18:        chromium-52.0.2743.82-master-prefs-path.patch
+# Use gn system files
+Patch20:        chromium-54.0.2840.59-gn-system.patch
+# Fix last commit position issue
+# https://groups.google.com/a/chromium.org/forum/#!topic/gn-dev/7nlJv486bD4
+Patch21:        chromium-53.0.2785.92-last-commit-position.patch
+# Fix issue where timespec is not defined when sys/stat.h is included.
+Patch22:        chromium-53.0.2785.92-boringssl-time-fix.patch
+# I wouldn't have to do this if there was a standard way to append extra compiler flags
+Patch24:        http://pkgs.fedoraproject.org/cgit/rpms/chromium.git/plain/chromium-59.0.3071.86-nullfix.patch
+# Add explicit includedir for jpeglib.h
+Patch25:        chromium-54.0.2840.59-jpeg-include-dir.patch
+# On i686, pass --no-keep-memory --reduce-memory-overheads to ld.
+Patch26:        http://pkgs.fedoraproject.org/cgit/rpms/chromium.git/plain/chromium-59.0.3071.86-i686-ld-memory-tricks.patch
+# obj/content/renderer/renderer/child_frame_compositing_helper.o: In function `content::ChildFrameCompositingHelper::OnSetSurface(cc::SurfaceId const&, gfx::Size const&, float, cc::SurfaceSequence const&)':
+# /builddir/build/BUILD/chromium-54.0.2840.90/out/Release/../../content/renderer/child_frame_compositing_helper.cc:214: undefined reference to `cc_blink::WebLayerImpl::setOpaque(bool)'
+#Patch27:        http://pkgs.fedoraproject.org/cgit/rpms/chromium.git/plain/chromium-59.0.3071.86-setopaque.patch
+# Use -fpermissive to build WebKit
+Patch31:        chromium-56.0.2924.87-fpermissive.patch
 
-Patch20:	chromium-49.0.2612.0-compile.patch
-Patch21:	chromium-link-libatomic.patch
-Patch22:	chromium-53.0.2756.0-lto-clang.patch
-Patch23:	chromium-53.0.2756.0-compile.patch
+### Chromium Tests Patches ###
+# suse, system libs
+Patch103:	arm_use_right_compiler.patch
+#Patch104:	https://gitweb.gentoo.org/repo/gentoo.git/plain/www-client/chromium/files/chromium-system-ffmpeg-r6.patch
+Patch105:	chromium-system-jinja-r13.patch
+
+# mga
+Patch111:	chromium-55-extra-media.patch
+Patch112:	chromium-40-wmvflvmpg.patch
+Patch114:	chromium-55-flac.patch
+
+# omv
+Patch120:	chromium-59-clang-workaround.patch
+#Patch121:	chromium-59.0.3071.115-glibc-2.26.patch
+#Patch122:	chromium-63-gn-bootstrap.patch
+Patch123:	chromium-61.0.3163.100-glibc-2.26.patch
+#Patch124:	chromium-61.0.3163.100-atk-compile.patch
+Patch125:	chromium-64-system-curl.patch
+Patch126:	chromium-64-missing-includes.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
@@ -66,19 +135,39 @@ Obsoletes: 	chromium-browser-beta < 26.0.1410.51
 Obsoletes: 	chromium-browser < 1:9.0.597.94
 BuildRequires: 	gperf
 BuildRequires: 	bison
+BuildRequires: 	re2c
 BuildRequires: 	flex
 #BuildRequires: 	v8-devel
 BuildRequires: 	alsa-oss-devel
-BuildRequires: 	icu-devel
+%if %mdvver >= 201500
+BuildRequires:	atomic-devel
+BuildRequires:	harfbuzz-devel
+%else
+BuildRequires:	%{_lib}atomic1
+%endif
+BuildRequires:  pkgconfig(icu-i18n)
+BuildRequires: 	snappy-devel
 BuildRequires: 	jsoncpp-devel
-BuildRequires: 	harfbuzz-devel
 BuildRequires: 	pkgconfig(expat)
 BuildRequires: 	pkgconfig(glib-2.0)
+# FIXME we currently can't use system re2 because
+# Chromium uses libc++ while the system STL is libstdc++ for now
+# This leads to unresolved symbols because of disagreements over
+# the namespace of std::basic_string (__1 vs. not __1)
+#BuildRequires:	pkgconfig(re2)
+BuildRequires: 	pkgconfig(wayland-egl)
 BuildRequires: 	pkgconfig(nss)
 BuildRequires: 	bzip2-devel
 BuildRequires: 	jpeg-devel
 BuildRequires: 	pkgconfig(libpng)
-BuildRequires:	pkgconfig(gtk+-3.0)
+%if %{with system_ffmpeg}
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavfilter)
+BuildRequires:  pkgconfig(libavformat) >= 57.41.100
+BuildRequires:  pkgconfig(libavutil)
+%endif
+BuildRequires:	gtk+3.0-devel
+BuildRequires:	gtk+2.0-devel
 BuildRequires: 	pkgconfig(nspr)
 BuildRequires: 	pkgconfig(zlib)
 BuildRequires: 	pkgconfig(xscrnsaver)
@@ -88,7 +177,9 @@ BuildRequires: 	cups-devel
 BuildRequires:	pkgconfig(dbus-glib-1)
 BuildRequires: 	pkgconfig(gnome-keyring-1)
 BuildRequires: 	pam-devel
+%if %{with system_vpx}
 BuildRequires: 	pkgconfig(vpx)
+%endif
 BuildRequires: 	pkgconfig(xtst)
 BuildRequires: 	pkgconfig(libxslt)
 BuildRequires: 	pkgconfig(libxml-2.0)
@@ -103,37 +194,60 @@ BuildRequires: 	pkgconfig(flac)
 BuildRequires: 	pkgconfig(opus)
 BuildRequires: 	pkgconfig(libwebp)
 BuildRequires: 	pkgconfig(speex)
+%if %{with system_minizip}
 BuildRequires: 	pkgconfig(minizip)
+%endif
 BuildRequires:  pkgconfig(protobuf)
 BuildRequires: 	yasm
 BuildRequires: 	pkgconfig(libusb-1.0)
 BuildRequires:  speech-dispatcher-devel
 BuildRequires:  pkgconfig(libpci)
 BuildRequires:	pkgconfig(libexif)
-BuildRequires:	%{mklibname -d -s atomic}
 %if %mdvver >= 201500
 BuildRequires:	python2
 %else
 BuildRequires:	python
 %endif
 BuildRequires:	ninja
+BuildRequires:	nodejs
+BuildRequires:	python2-markupsafe
+BuildRequires:	python2-ply
+BuildRequires:	python2-beautifulsoup4
+BuildRequires:	python2-simplejson
+BuildRequires:	python2-html5lib
 
 %description
 Chromium is a browser that combines a minimal design with sophisticated
 technology to make the web faster, safer, and easier.
 
-This is the dev channel Chromium browser. It offers an experimental
-browser which is updated with features and fixes before they get
-thoroughly tested. If you want a stable version, install the
-chromium-browser-stable package instead.
+This is the stable channel Chromium browser. It offers a rock solid
+browser which is updated with features and fixes once they have been
+thoroughly tested. If you want the latest features, install the
+chromium-browser-dev package instead.
 
-%package -n chromedriver-dev
-Summary:        WebDriver for Google Chrome/Chromium
-Group:          Development/Other
-Requires:       %{name} = %{version}-%{release}
+%if "%{channel}" == "stable"
+%package -n chromium-browser
+Summary: 	A fast webkit-based web browser (transition package)
+Epoch: 		1
+Group:		Networking/WWW
+Requires: 	%{name} = %{version}-%{release}
+
+%description -n chromium-browser
+Chromium is a browser that combines a minimal design with sophisticated
+technology to make the web faster, safer, and easier.
+
+This is a transition package that installs the stable channel Chromium
+browser. If you prefer the dev channel browser, install the
+chromium-browser-dev package instead.
+%endif
+
+%package -n chromedriver%{namesuffix}
+Summary:	WebDriver for Google Chrome/Chromium
+Group:		Development/Other
+Requires:	%{name} = %{version}-%{release}
 
 
-%description -n chromedriver-dev
+%description -n chromedriver%{namesuffix}
 WebDriver is an open source tool for automated testing of webapps across many
 browsers. It provides capabilities for navigating to web pages, user input,
 JavaScript execution, and more. ChromeDriver is a standalone server which
@@ -142,34 +256,202 @@ members of the Chromium and WebDriver teams.
 
 
 %prep
-%setup -q -n chromium-%{basever}
+%setup -q -n chromium-%{version} -a 4
 %apply_patches
+
+if [ -e gpu/config/gpu_lists_version.h ]; then
+	echo Tarballs have been fixed, remove the workaround
+	exit 1
+else
+	echo '#define GPU_LISTS_VERSION 1' >gpu/config/gpu_lists_version.h
+fi
+
+rm -rf third_party/binutils/
 
 echo "%{revision}" > build/LASTCHANGE.in
 
 # Hard code extra version
-FILE=chrome/common/chrome_version_info_posix.cc
-#sed -i.orig -e 's/getenv("CHROME_VERSION_EXTRA")/"%{product_vendor} %{product_version}"/' $FILE
+FILE=chrome/common/channel_info_posix.cc
+sed -i.orig -e 's/getenv("CHROME_VERSION_EXTRA")/"%{product_vendor} %{product_version}"/' $FILE
 cmp $FILE $FILE.orig && exit 1
 
-# remove bundle v8
-#find v8 -type f \! -iname '*.gyp*' -delete
-#build/linux/unbundle/replace_gyp_files.py
-#-Duse_system_v8=1 \
-
-# gyp is rather convoluted and not python3 friendly -- let's make
+# gn is rather convoluted and not python3 friendly -- let's make
 # sure it sees python2 when it calls python
 ln -s %{_bindir}/python2 python
 
-# Remove most bundled libraries. Some are still needed.
-#build/linux/unbundle/remove_bundled_libraries.py \
-#	third_party/libwebp \
-#	third_party/libjpeg \
-#	third_party/libusb \
-#	third_party/libudev \
-#	third_party/opus \
-#	third_party/webrtc \
-#	--do-remove
+# use the system nodejs
+mkdir -p third_party/node/linux/node-linux-x64/bin
+ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
+
+# Remove bundled libs
+python2 build/linux/unbundle/remove_bundled_libraries.py \
+	'third_party/ffmpeg' \
+	'third_party/adobe' \
+	'third_party/angle' \
+	'third_party/angle/src/common/third_party/smhasher' \
+	'third_party/blink' \
+	'third_party/breakpad' \
+	'third_party/crc32c' \
+	'third_party/flac' \
+	'third_party/glslang-angle' \
+	'third_party/harfbuzz-ng' \
+	'third_party/icu' \
+	'base/third_party/libevent' \
+	'third_party/libdrm' \
+	'third_party/libjpeg_turbo' \
+	'third_party/libpng' \
+	'third_party/libsrtp' \
+	'third_party/libwebp' \
+	'third_party/libxml' \
+	'third_party/libxslt' \
+	'third_party/metrics_proto' \
+	'third_party/openh264' \
+	'third_party/re2' \
+	'third_party/snappy' \
+	'third_party/speech-dispatcher' \
+	'third_party/spirv-tools-angle' \
+	'third_party/spirv-headers' \
+	'third_party/swiftshader' \
+	'third_party/swiftshader/third_party/subzero' \
+	'third_party/swiftshader/third_party/LLVM' \
+	'third_party/swiftshader/third_party/llvm-subzero' \
+	'third_party/usb_ids' \
+	'third_party/vulkan-validation-layers' \
+	'third_party/xdg-utils' \
+	'third_party/yasm' \
+	'third_party/zlib' \
+	'base/third_party/dmg_fp' \
+	'base/third_party/dynamic_annotations' \
+	'base/third_party/icu' \
+	'base/third_party/nspr' \
+	'base/third_party/superfasthash' \
+	'base/third_party/symbolize' \
+	'base/third_party/valgrind' \
+	'base/third_party/xdg_mime' \
+	'base/third_party/xdg_user_dirs' \
+	'chrome/third_party/mozilla_security_manager' \
+	'courgette/third_party' \
+	'native_client_sdk/src/libraries/third_party/newlib-extras' \
+	'native_client/src/third_party/dlmalloc' \
+	'native_client/src/third_party/valgrind' \
+	'net/third_party/mozilla_security_manager' \
+	'net/third_party/nss' \
+	'third_party/WebKit' \
+	'third_party/analytics' \
+	'third_party/angle' \
+	'third_party/angle/src/common/third_party/base' \
+	'third_party/angle/src/third_party/compiler' \
+	'third_party/angle/src/third_party/libXNVCtrl' \
+	'third_party/angle/src/third_party/trace_event' \
+	'third_party/blanketjs' \
+	'third_party/boringssl' \
+	'third_party/brotli' \
+	'third_party/cacheinvalidation' \
+	'third_party/catapult' \
+	'third_party/catapult/common/py_vulcanize/third_party/rcssmin' \
+	'third_party/catapult/common/py_vulcanize/third_party/rjsmin' \
+	'third_party/catapult/tracing/third_party/d3' \
+	'third_party/catapult/tracing/third_party/gl-matrix' \
+	'third_party/catapult/tracing/third_party/jszip' \
+	'third_party/catapult/tracing/third_party/mannwhitneyu' \
+	'third_party/catapult/tracing/third_party/oboe' \
+	'third_party/catapult/tracing/third_party/pako' \
+	'third_party/catapult/third_party/polymer' \
+	'third_party/ced' \
+	'third_party/cld_2' \
+	'third_party/cld_3' \
+	'third_party/cros_system_api' \
+	'third_party/devscripts' \
+	'third_party/dom_distiller_js' \
+	'third_party/expat' \
+	'third_party/fips181' \
+	'third_party/flatbuffers' \
+	'third_party/flot' \
+	'third_party/freetype' \
+	'third_party/freetype/src' \
+	'third_party/freetype/src/src' \
+	'third_party/freetype/src/src/psnames' \
+	'third_party/google_input_tools' \
+	'third_party/google_input_tools/third_party/closure_library' \
+	'third_party/google_input_tools/third_party/closure_library/third_party/closure' \
+	'third_party/googletest' \
+	'third_party/googletest/src' \
+	'third_party/googletest/src/googletest' \
+	'third_party/googletest/src/googletest/include' \
+	'third_party/googletest/src/googletest/include/gtest' \
+	'third_party/hunspell' \
+	'third_party/iccjpeg' \
+	'third_party/inspector_protocol' \
+	'third_party/jinja2' \
+	'third_party/jstemplate' \
+	'third_party/khronos' \
+	'third_party/leveldatabase' \
+	'third_party/libXNVCtrl' \
+	'third_party/libaddressinput' \
+	'third_party/libjingle' \
+	'third_party/libphonenumber' \
+	'third_party/libsecret' \
+	'third_party/libsrtp' \
+	'third_party/libudev' \
+	'third_party/libusb' \
+	'third_party/libvpx' \
+	'third_party/libxml/chromium' \
+	'third_party/libwebm' \
+	'third_party/libyuv' \
+	'third_party/lss' \
+	'third_party/lzma_sdk' \
+	'third_party/mesa' \
+	'third_party/modp_b64' \
+	'third_party/mt19937ar' \
+	'third_party/node' \
+	'third_party/node/node_modules/polymer-bundler/lib/third_party/UglifyJS2' \
+	'third_party/openmax_dl' \
+	'third_party/opus' \
+	'third_party/ots' \
+	'third_party/pdfium' \
+	'third_party/pdfium/third_party/agg23' \
+	'third_party/pdfium/third_party/base' \
+	'third_party/pdfium/third_party/bigint' \
+	'third_party/pdfium/third_party/build' \
+	'third_party/pdfium/third_party/freetype' \
+	'third_party/pdfium/third_party/lcms' \
+	'third_party/pdfium/third_party/libopenjpeg20' \
+	'third_party/pdfium/third_party/libpng16' \
+	'third_party/pdfium/third_party/libtiff' \
+	'third_party/polymer' \
+	'third_party/protobuf' \
+	'third_party/protobuf/third_party/six' \
+	'third_party/ply' \
+	'third_party/qcms' \
+	'third_party/qunit' \
+	'third_party/sfntly' \
+	'third_party/sinonjs' \
+	'third_party/skia' \
+	'third_party/smhasher' \
+	'third_party/sqlite' \
+	'third_party/tcmalloc' \
+	'third_party/usrsctp' \
+	'third_party/web-animations-js' \
+	'third_party/webdriver' \
+	'third_party/webrtc' \
+	'third_party/widevine' \
+	'third_party/woff2' \
+	'third_party/libvpx/source/libvpx/third_party/x86inc' \
+	'buildtools/third_party/libc++' \
+	'url/third_party/mozilla' \
+	'v8/third_party/inspector_protocol' \
+	'v8/src/third_party/valgrind' \
+	--do-remove
+
+# Look, I don't know. This package is spit and chewing gum. Sorry.
+rm -rf third_party/markupsafe
+ln -s %{python2_sitearch}/markupsafe third_party/markupsafe
+# We should look on removing other python packages as well i.e. ply
+
+# workaround build failure
+if [ ! -f chrome/test/data/webui/i18n_process_css_test.html ]; then
+	touch chrome/test/data/webui/i18n_process_css_test.html
+fi
 
 %build
 %ifarch %{arm}
@@ -179,121 +461,124 @@ mkdir -p bfd
 ln -s %{_bindir}/ld.bfd bfd/ld
 export PATH=$PWD/bfd:$PATH
 # Use linker flags to reduce memory consumption
-%global ldflags %{ldflags} -flto -Wl,--no-keep-memory -Wl,--reduce-memory-overheads
-%else
-%global ldflags %{ldflags} -flto
+%global ldflags %{ldflags} -fuse-ld=bfd -Wl,--no-keep-memory -Wl,--reduce-memory-overheads
 %endif
 
+%if %mdvver >= 201500
+%ifarch %arm
+export CC=gcc
+export CXX=g++
+%else
 export CC=clang
 export CXX=clang++
+%endif
+%else
+export CC=gcc
+export CXX=g++
+%endif
 
-# gyp is rather convoluted and not python3 friendly -- let's make
+# gn is rather convoluted and not python3 friendly -- let's make
 # sure it sees python2 when it calls python
 export PATH=`pwd`:$PATH
 
-# We need to find why even if building w -Duse_system_libpng=0, this is built with third party libpng.
-# We able bundle one in stable release for now and will work on beta with system libpng
-#
-#export GYP_DEFINES=sysroot=
-# get resources for high dpi and touch
-export GYP_DEFINES="use_aura=1 enable_hidpi=1 enable_touch_ui=1 clang_use_chrome_plugins=0 use_hotwording=0"
-
-# We want to use our version...
-rm -rf third_party/binutils
-
-# FIXME
-# -Duse_system_libjpeg=1 \
-# Broken as of 52.0.2743.6, causes unresolved symbols
-# chromium_jpeg_* in external/pdfium tree
-
-export GYP_GENERATORS=ninja
-build/gyp_chromium --depth=. \
-	-Dbuild_ffmpegsumo=1 \
-        -Dlinux_sandbox_path=%{_crdir}/chrome-sandbox \
-        -Dlinux_sandbox_chrome_path=%{_crdir}/chrome \
-        -Dlinux_link_gnome_keyring=0 \
-	-Dlinux_link_gsettings=1 \
-	-Dlinux_link_libpci=1 \
-	-Dlinux_link_libspeechd=1 \
-	-Dlogging_like_official_build=1 \
-	-Dclang_use_chrome_plugins=0 \
-        -Duse_gconf=0 \
-        -Dsysroot= \
-	-Dclang=1 \
-	-Dhost_clang=1 \
-        -Dwerror='' \
-	-Ddisable_fatal_linker_warnings=1 \
-	-Dsystem_libdir=%{_lib} \
-	-Dpython_ver=%{python_version} \
+myconf_gn=" use_sysroot=false is_debug=false use_gold=true"
 %if %mdvver >= 201500
-        -Dlibspeechd_h_prefix=speech-dispatcher/ \
-%endif
-        -Duse_system_sqlite=0 \
-        -Duse_system_nss=1 \
-        -Duse_system_libxml=1 \
-        -Duse_system_zlib=1 \
-        -Duse_system_bzip2=1 \
-	-Duse_system_jsoncpp=1 \
-        -Duse_system_xdg_utils=1 \
-        -Duse_system_libpng=1 \
-        -Duse_system_libjpeg=0 \
-	-Duse_system_harfbuzz=1 \
-        -Duse_system_libevent=1 \
-	-Duse_system_binutils=1 \
-	-Ddisable_newlib_untar=1 \
-	-Duse_system_yasm=1 \
-	-Duse_system_libwebp=1 \
-	-Duse_system_opus=1 \
-        -Duse_system_flac=1 \
-        -Duse_system_vpx=1 \
-        -Duse_system_icu=0 \
-	-Duse_system_nspr=1 \
-        -Duse_system_libusb=1 \
-        -Duse_allocator=none \
-	-Duse_system_minizip=1 \
-	-Duse_system_protobuf=0 \
-	-Ddisable_nacl=1 \
-        -Ddisable_sse2=1 \
-	-Duse_pulseaudio=1 \
-	-Dlinux_use_gold_binary=1 \
-	-Dlinux_use_gold_flags=1 \
-%if %{with plf}
-	-Dproprietary_codecs=1 \
-	-Dffmpeg_branding=Chrome \
+%ifarch %arm
+myconf_gn+=" is_clang=false"
 %else
-	-Dproprietary_codecs=1 \
+# FIXME return to this if and when Chromium stops using clang
+# flags that don't exist in released upstream clang
+#myconf_gn+=" is_clang=true clang_base_path=\"/usr\" clang_use_chrome_plugins=false"
+myconf_gn+=" is_clang=false"
 %endif
-        -Duse_system_speex=1 \
+%else
+myconf_gn+=" is_clang=false"
+%endif
+
+myconf_gn+=" treat_warnings_as_errors=false"
+myconf_gn+=" use_system_libjpeg=true "
+%if %mdvver >= 201500
+#myconf_gn+=" use_system_harfbuzz=true "
+%endif
+myconf_gn+=" use_gnome_keyring=false "
+myconf_gn+=" fatal_linker_warnings=false "
+myconf_gn+=" system_libdir=\"%{_lib}\""
+myconf_gn+=" use_allocator=\"none\""
+myconf_gn+=" use_aura=true "
+myconf_gn+=" use_gconf=false"
+myconf_gn+=" icu_use_data_file=true"
+%if %{with gtk3}
+myconf_gn+=" use_gtk3=true "
+%else
+myconf_gn+=" use_gtk3=false "
+%endif
+%if %{with ozone}
+myconf_gn+=" use_ozone=true "
+%endif
+myconf_gn+=" enable_nacl=false "
+myconf_gn+=" proprietary_codecs=true "
+myconf_gn+=" ffmpeg_branding=\"ChromeOS\" "
+myconf_gn+=" enable_ac3_eac3_audio_demuxing=true "
+myconf_gn+=" enable_hevc_demuxing=true "
+myconf_gn+=" enable_mse_mpeg2ts_stream_parser=true "
 %ifarch i586
-	-Dtarget_arch=ia32 \
+myconf_gn+=" target_cpu=\"x86\""
 %endif
 %ifarch x86_64
-	-Dtarget_arch=x64 \
+myconf_gn+=" target_cpu=\"x64\""
 %endif
 %ifarch %arm
-	-Darm_float_abi=hard \
-	-Dv8_use_arm_eabi_hardfloat=true \
-	-Drelease_extra_cflags="%optflags -DUSE_EABI_HARDFLOAT" \
-	-Dtarget_arch=arm \
-	-Darm_fpu=neon \
-	-Darm_thumb=1 \
-	-Dremove_webcore_debug_symbols=1 \
-	-Darm_neon=1 \
-	-Darm_neon_optional=0 \
-	-Darm_version=7 \
-	-Darmv7=1 \
-%else
-	-Drelease_extra_cflags="%optflags" \
+myconf_gn+=" target_cpu=\"arm\""
+myconf_gn+=" remove_webcore_debug_symbols=true"
+myconf_gn+=" rtc_build_with_neon=true"
 %endif
-	-Duse_lto=1 \
-	-Duse_lto_o2=1 \
-	-Duse_aura=1 \
-	-Duse_gtk3=1 \
-        -Dgoogle_api_key=%{google_api_key} \
-        -Dgoogle_default_client_id=%{google_default_client_id} \
-        -Dgoogle_default_client_secret=%{google_default_client_secret}
+%ifarch aarch64
+myconf_gn+=" target_cpu=\"arm64\""
+%endif
+myconf_gn+=" google_api_key=\"%{google_api_key}\""
+myconf_gn+=" google_default_client_id=\"%{google_default_client_id}\""
+myconf_gn+=" google_default_client_secret=\"%{google_default_client_secret}\""
+
+# Set system libraries to be used
+gn_system_libraries="
+    flac
+    opus
+    libjpeg
+    libwebp
+    ffmpeg
+    libxslt
+    snappy
+    yasm
+"
+#    libpng
+# cb - chrome 58
+# libevent as system lib causes some hanging issues particularly with extensions
+
+%if %{with system_minizip}
+gn_system_libraries+=" zlib"
+%endif
+%if %{with system_harfbuzz}
+gn_system_libraries+=" harfbuzz-ng"
+%endif
+%if %{with system_icu}
+gn_system_libraries+=" icu"
+%endif
+%if %{with system_vpx}
+gn_system_libraries+=" libvpx"
+%endif
+%if %{with system_ffmpeg}
+gn_system_libraries+=" ffmpeg"
+%endif
+python2 build/linux/unbundle/replace_gn_files.py --system-libraries ${gn_system_libraries}
+
+python2 tools/gn/bootstrap/bootstrap.py -v --gn-gen-args "${myconf_gn}"
+
+python2 third_party/libaddressinput/chromium/tools/update-strings.py
+
+out/Release/gn gen --args="${myconf_gn}" out/Release
+
 # Note: DON'T use system sqlite (3.7.3) -- it breaks history search
-# As of 50.0.2661.11, use_system_icu breaks the build.
+# As of 36.0.1985.143, use_system_icu breaks the build.
 # gyp: Duplicate target definitions for /home/bero/abf/chromium-browser-stable/BUILD/chromium-36.0.1985.143/third_party/icu/icu.gyp:icudata#target
 # This should be enabled again once the gyp files are fixed.
 ninja -C out/Release chrome chrome_sandbox chromedriver
@@ -308,10 +593,8 @@ install -m 755 %{SOURCE1} %{buildroot}%{_libdir}/%{name}/
 install -m 755 out/Release/chrome %{buildroot}%{_libdir}/%{name}/
 install -m 4755 out/Release/chrome_sandbox %{buildroot}%{_libdir}/%{name}/chrome-sandbox
 cp -a out/Release/chromedriver %{buildroot}%{_libdir}/%{name}/chromedriver
-install -m 644 out/Release/chrome.1 %{buildroot}%{_mandir}/man1/%{name}.1
 install -m 644 out/Release/locales/*.pak %{buildroot}%{_libdir}/%{name}/locales/
 install -m 644 out/Release/chrome_100_percent.pak %{buildroot}%{_libdir}/%{name}/
-install -m 644 out/Release/content_resources.pak %{buildroot}%{_libdir}/%{name}/
 install -m 644 out/Release/resources.pak %{buildroot}%{_libdir}/%{name}/
 install -m 644 out/Release/icudtl.dat %{buildroot}%{_libdir}/%{name}/
 install -m 644 out/Release/*.bin %{buildroot}%{_libdir}/%{name}/
@@ -337,8 +620,18 @@ done
 mkdir -p %{buildroot}%{_sysconfdir}/chromium
 install -m 0644 %{SOURCE3} %{buildroot}%{_sysconfdir}/chromium
 
+# FIXME ultimately Chromium should just use the system version
+# instead of looking in its own directory... But for now, symlinking
+# stuff where Chromium wants it will do
+mkdir -p %{buildroot}%{_libdir}/%{name}/swiftshader
+ln -s %{_libdir}/libGLESv2.so.2.0.0 %{buildroot}%{_libdir}/%{name}/swiftshader/libGLESv2.so
+ln -s %{_libdir}/libEGL.so.1.0.0 %{buildroot}%{_libdir}/%{name}/swiftshader/libEGL.so
 
 find %{buildroot} -name "*.nexe" -exec strip {} \;
+
+%if "%{channel}" == "stable"
+%files -n chromium-browser
+%endif
 
 %files
 %doc LICENSE AUTHORS
@@ -351,17 +644,15 @@ find %{buildroot} -name "*.nexe" -exec strip {} \;
 %{_libdir}/%{name}/icudtl.dat
 %{_libdir}/%{name}/locales
 %{_libdir}/%{name}/chrome_100_percent.pak
-%{_libdir}/%{name}/content_resources.pak
 %{_libdir}/%{name}/resources.pak
 %{_libdir}/%{name}/resources
 %{_libdir}/%{name}/themes
 %{_libdir}/%{name}/default_apps
-%{_mandir}/man1/%{name}*
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_libdir}/%{name}/swiftshader
 
-
-%files -n chromedriver-dev
+%files -n chromedriver%{namesuffix}
 %doc LICENSE AUTHORS
 %{_bindir}/chromedriver
 %{_libdir}/%{name}/chromedriver
