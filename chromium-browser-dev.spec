@@ -160,6 +160,7 @@ BuildRequires: 	pkgconfig(nss)
 BuildRequires: 	bzip2-devel
 BuildRequires: 	jpeg-devel
 BuildRequires: 	pkgconfig(libpng)
+BuildRequires:	pkgconfig(libcurl)
 %if %{with system_ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavfilter)
