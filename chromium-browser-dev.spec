@@ -64,6 +64,7 @@ Source3:	master_preferences
 # sources back. This is pulled from the last Chromium build that
 # had them.
 Source4:	https://ftp.osuosl.org/pub/blfs/conglomeration/chromium/chromium-freetype.tar.xz
+Source100:	%{name}.rpmlintrc
 
 %if %mdvver >= 201500
 # Don't use clang's integrated as while trying to check the version of gas
@@ -128,6 +129,7 @@ Patch123:	chromium-61.0.3163.100-glibc-2.26.patch
 #Patch124:	chromium-61.0.3163.100-atk-compile.patch
 Patch125:	chromium-64-system-curl.patch
 Patch126:	chromium-64-missing-includes.patch
+Patch127:	chromium-64-system-libpng.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
@@ -414,11 +416,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/pdfium/third_party/base' \
 	'third_party/pdfium/third_party/bigint' \
 	'third_party/pdfium/third_party/build' \
-	'third_party/pdfium/third_party/freetype' \
-	'third_party/pdfium/third_party/lcms' \
 	'third_party/pdfium/third_party/libopenjpeg20' \
-	'third_party/pdfium/third_party/libpng16' \
-	'third_party/pdfium/third_party/libtiff' \
 	'third_party/polymer' \
 	'third_party/protobuf' \
 	'third_party/protobuf/third_party/six' \
@@ -498,6 +496,8 @@ myconf_gn+=" is_clang=false"
 
 myconf_gn+=" treat_warnings_as_errors=false"
 myconf_gn+=" use_system_libjpeg=true "
+myconf_gn+=" use_system_lcms2=true "
+myconf_gn+=" use_system_libpng=true "
 %if %mdvver >= 201500
 #myconf_gn+=" use_system_harfbuzz=true "
 %endif
