@@ -49,7 +49,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	64.0.3253.3
+Version: 	64.0.3260.2
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -123,13 +123,12 @@ Patch114:	chromium-55-flac.patch
 
 # omv
 Patch120:	chromium-59-clang-workaround.patch
-#Patch121:	chromium-59.0.3071.115-glibc-2.26.patch
 #Patch122:	chromium-63-gn-bootstrap.patch
-Patch123:	chromium-61.0.3163.100-glibc-2.26.patch
 #Patch124:	chromium-61.0.3163.100-atk-compile.patch
 Patch125:	chromium-64-system-curl.patch
 Patch126:	chromium-64-missing-includes.patch
 Patch127:	chromium-64-system-libpng.patch
+Patch128:	chromium-64-gn-bootstrap.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
@@ -262,13 +261,6 @@ members of the Chromium and WebDriver teams.
 %prep
 %setup -q -n chromium-%{version} -a 4
 %apply_patches
-
-if [ -e gpu/config/gpu_lists_version.h ]; then
-	echo Tarballs have been fixed, remove the workaround
-	exit 1
-else
-	echo '#define GPU_LISTS_VERSION 1' >gpu/config/gpu_lists_version.h
-fi
 
 rm -rf third_party/binutils/
 
