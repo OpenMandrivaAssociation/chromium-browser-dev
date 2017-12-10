@@ -1,8 +1,8 @@
---- chromium-63.0.3230.0/media/base/mime_util_internal.cc.0112~	2017-10-09 19:58:52.593457837 +0200
-+++ chromium-63.0.3230.0/media/base/mime_util_internal.cc	2017-10-09 20:02:09.846295520 +0200
-@@ -74,7 +74,12 @@ const base::flat_map<std::string, MimeUt
-         {"flac", MimeUtil::FLAC}, {"vp8", MimeUtil::VP8},
-         {"vp8.0", MimeUtil::VP8}, {"theora", MimeUtil::THEORA},
+--- chromium-64.0.3282.14/media/base/mime_util_internal.cc.0112~	2017-12-09 15:03:31.649430733 +0100
++++ chromium-64.0.3282.14/media/base/mime_util_internal.cc	2017-12-09 15:06:57.042866823 +0100
+@@ -80,7 +80,12 @@ const base::flat_map<std::string, MimeUt
+         {"av1", MimeUtil::AV1},
+ #endif
          {"dts", MimeUtil::DTS}, {"mp2", MimeUtil::MP2},
 -	{"mp4v.20.8", MimeUtil::MPEG4_SP}, {"mp4v.20.240", MimeUtil::MPEG4_ASP}
 +	{"mp4v.20.8", MimeUtil::MPEG4_SP}, {"mp4v.20.240", MimeUtil::MPEG4_ASP},
@@ -14,7 +14,7 @@
        },
        base::KEEP_FIRST_OF_DUPES);
  
-@@ -296,6 +301,9 @@ void MimeUtil::AddSupportedMediaFormats(
+@@ -309,6 +314,9 @@ void MimeUtil::AddSupportedMediaFormats(
    CodecSet webm_codecs(webm_audio_codecs);
    webm_codecs.insert(webm_video_codecs.begin(), webm_video_codecs.end());
  
@@ -24,7 +24,7 @@
  #if BUILDFLAG(USE_PROPRIETARY_CODECS)
    const CodecSet mp3_codecs{MP3};
    const CodecSet aac{MPEG2_AAC, MPEG4_AAC};
-@@ -328,6 +336,29 @@ void MimeUtil::AddSupportedMediaFormats(
+@@ -346,6 +354,29 @@ void MimeUtil::AddSupportedMediaFormats(
    mp4_codecs.insert(mp4_video_codecs.begin(), mp4_video_codecs.end());
  #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
  
@@ -54,7 +54,7 @@
    const CodecSet implicit_codec;
    AddContainerWithCodecs("audio/wav", wav_codecs, false);
    AddContainerWithCodecs("audio/x-wav", wav_codecs, false);
-@@ -345,6 +376,11 @@ void MimeUtil::AddSupportedMediaFormats(
+@@ -363,6 +394,11 @@ void MimeUtil::AddSupportedMediaFormats(
  
    AddContainerWithCodecs("audio/x-matroska", matroska_audio_codecs, false);
    AddContainerWithCodecs("video/x-matroska", matroska_codecs, false);
@@ -66,7 +66,7 @@
  
  #if BUILDFLAG(USE_PROPRIETARY_CODECS)
    AddContainerWithCodecs("audio/mpeg", mp3_codecs, true);  // Allow "mp3".
-@@ -980,6 +1016,15 @@ bool MimeUtil::IsCodecProprietary(Codec
+@@ -1015,6 +1051,15 @@ bool MimeUtil::IsCodecProprietary(Codec
      case DTS:
      case MPEG4_SP:
      case MPEG4_ASP:
@@ -82,17 +82,17 @@
        return true;
  
      case PCM:
-@@ -990,6 +1035,7 @@ bool MimeUtil::IsCodecProprietary(Codec
+@@ -1025,6 +1070,7 @@ bool MimeUtil::IsCodecProprietary(Codec
      case VP8:
      case VP9:
      case THEORA:
 +    case MPEG1:
+     case AV1:
        return false;
    }
- 
---- chromium-63.0.3230.0/media/base/mime_util_internal.h.0112~	2017-10-09 19:58:52.603457798 +0200
-+++ chromium-63.0.3230.0/media/base/mime_util_internal.h	2017-10-09 19:58:52.688457466 +0200
-@@ -48,7 +48,17 @@ class MEDIA_EXPORT MimeUtil {
+--- chromium-64.0.3282.14/media/base/mime_util_internal.h.0112~	2017-12-09 15:03:31.649430733 +0100
++++ chromium-64.0.3282.14/media/base/mime_util_internal.h	2017-12-09 15:03:31.651430739 +0100
+@@ -49,7 +49,17 @@ class MEDIA_EXPORT MimeUtil {
      MP2,
      MPEG4_SP,
      MPEG4_ASP,
@@ -111,9 +111,9 @@
    };
  
    // Platform configuration structure.  Controls which codecs are supported at
---- chromium-63.0.3230.0/net/base/mime_util.cc.0112~	2017-10-09 19:58:52.649457618 +0200
-+++ chromium-63.0.3230.0/net/base/mime_util.cc	2017-10-09 20:03:18.416071076 +0200
-@@ -100,6 +100,10 @@ static const MimeInfo kPrimaryMappings[]
+--- chromium-64.0.3282.14/net/base/mime_util.cc.0112~	2017-12-09 15:03:31.650430736 +0100
++++ chromium-64.0.3282.14/net/base/mime_util.cc	2017-12-09 15:03:31.651430739 +0100
+@@ -101,6 +101,10 @@ static const MimeInfo kPrimaryMappings[]
      {"video/x-matroska", "mkv"},
      {"audio/x-matroska", "mkv"},
      {"video/x-msvideo", "avi"},
@@ -124,7 +124,7 @@
  };
  
  static const MimeInfo kSecondaryMappings[] = {
-@@ -512,6 +516,7 @@ static const char* const kStandardVideoT
+@@ -513,6 +517,7 @@ static const char* const kStandardVideoT
    "video/sd-video",
    "video/webm",
    "video/x-dv",

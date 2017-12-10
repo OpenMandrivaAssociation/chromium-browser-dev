@@ -49,7 +49,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	64.0.3278.0
+Version: 	64.0.3282.14
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -59,11 +59,6 @@ Source0: 	https://commondatastorage.googleapis.com/chromium-browser-official/chr
 Source1: 	chromium-wrapper
 Source2: 	chromium-browser%{namesuffix}.desktop
 Source3:	master_preferences
-# Upstream removed third_party/freetype (GOOD) but still relies on
-# internal freetype headers (BAD)... So we need to put freetype
-# sources back. This is pulled from the last Chromium build that
-# had them.
-Source4:	https://ftp.osuosl.org/pub/blfs/conglomeration/chromium/chromium-freetype.tar.xz
 Source100:	%{name}.rpmlintrc
 
 %if %mdvver >= 201500
@@ -126,9 +121,6 @@ Patch120:	chromium-59-clang-workaround.patch
 #Patch122:	chromium-63-gn-bootstrap.patch
 #Patch124:	chromium-61.0.3163.100-atk-compile.patch
 Patch125:	chromium-64-system-curl.patch
-Patch126:	chromium-64-missing-includes.patch
-Patch127:	chromium-64-system-libpng.patch
-Patch128:	chromium-64-gn-bootstrap.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
@@ -259,7 +251,7 @@ members of the Chromium and WebDriver teams.
 
 
 %prep
-%setup -q -n chromium-%{version} -a 4
+%setup -q -n chromium-%{version}
 %apply_patches
 
 rm -rf third_party/binutils/
@@ -341,6 +333,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/angle/src/third_party/trace_event' \
 	'third_party/blanketjs' \
 	'third_party/boringssl' \
+	'third_party/boringssl/src/third_party/fiat' \
 	'third_party/brotli' \
 	'third_party/cacheinvalidation' \
 	'third_party/catapult' \
@@ -354,7 +347,6 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/catapult/tracing/third_party/pako' \
 	'third_party/catapult/third_party/polymer' \
 	'third_party/ced' \
-	'third_party/cld_2' \
 	'third_party/cld_3' \
 	'third_party/cros_system_api' \
 	'third_party/devscripts' \
