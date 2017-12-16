@@ -49,7 +49,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	64.0.3282.24
+Version: 	65.0.3294.5
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -284,6 +284,8 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/glslang-angle' \
 	'third_party/harfbuzz-ng' \
 	'third_party/icu' \
+	'third_party/libaom' \
+	'third_party/libaom/source/libaom/third_party/x86inc' \
 	'base/third_party/libevent' \
 	'third_party/libdrm' \
 	'third_party/libjpeg_turbo' \
@@ -295,6 +297,9 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/metrics_proto' \
 	'third_party/openh264' \
 	'third_party/re2' \
+	'third_party/s2cellid' \
+	'third_party/skia' \
+	'third_party/skia/third_party/gif' \
 	'third_party/snappy' \
 	'third_party/speech-dispatcher' \
 	'third_party/spirv-tools-angle' \
@@ -425,6 +430,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'url/third_party/mozilla' \
 	'v8/third_party/inspector_protocol' \
 	'v8/src/third_party/valgrind' \
+	'v8/src/third_party/utf8-decoder' \
 	--do-remove
 
 # Look, I don't know. This package is spit and chewing gum. Sorry.
