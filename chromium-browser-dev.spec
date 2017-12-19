@@ -49,7 +49,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	65.0.3294.5
+Version: 	65.0.3298.3
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -274,6 +274,7 @@ ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
 # Remove bundled libs
 python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/ffmpeg' \
+	'third_party/fontconfig' \
 	'third_party/adobe' \
 	'third_party/angle' \
 	'third_party/angle/src/common/third_party/smhasher' \
@@ -497,7 +498,8 @@ myconf_gn+=" fatal_linker_warnings=false "
 myconf_gn+=" system_libdir=\"%{_lib}\""
 myconf_gn+=" use_allocator=\"none\""
 myconf_gn+=" use_aura=true "
-myconf_gn+=" use_gconf=false"
+myconf_gn+=" use_gio=false"
+myconf_gn+=" use_dconf=false"
 myconf_gn+=" icu_use_data_file=true"
 %if %{with gtk3}
 myconf_gn+=" use_gtk3=true "
