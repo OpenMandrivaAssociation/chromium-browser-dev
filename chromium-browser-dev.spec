@@ -49,7 +49,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	65.0.3311.3
+Version: 	65.0.3315.3
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -76,6 +76,7 @@ Patch3:		chromium-65-no-git-dependency.patch
 Patch4:         chromium-46.0.2490.71-notest.patch
 # Ignore broken nacl open fd counter
 Patch7:         chromium-47.0.2526.80-nacl-ignore-broken-fd-counter.patch
+Patch8:		chromium-65-buildfix.patch
 # Use libusb_interrupt_event_handler from current libusbx (1.0.21-0.1.git448584a)
 Patch9:         chromium-48.0.2564.116-libusb_interrupt_event_handler.patch
 # Ignore deprecations in cups 2.2
@@ -385,6 +386,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/libaddressinput' \
 	'third_party/libjingle' \
 	'third_party/libphonenumber' \
+	'third_party/libphonenumber/dist/cpp/src/phonenumbers/base/synchronization' \
 	'third_party/libsecret' \
 	'third_party/libsrtp' \
 	'third_party/libudev' \
