@@ -459,19 +459,6 @@ export PATH=$PWD/bfd:$PATH
 %global ldflags %{ldflags} -fuse-ld=bfd -Wl,--no-keep-memory -Wl,--reduce-memory-overheads
 %endif
 
-%if %mdvver >= 201500
-%ifarch %arm
-export CC=gcc
-export CXX=g++
-%else
-export CC=clang
-export CXX=clang++
-%endif
-%else
-export CC=gcc
-export CXX=g++
-%endif
-
 # gn is rather convoluted and not python3 friendly -- let's make
 # sure it sees python2 when it calls python
 export PATH=`pwd`:$PATH
@@ -483,8 +470,8 @@ myconf_gn+=" is_clang=false"
 %else
 # FIXME return to this if and when Chromium stops using clang
 # flags that don't exist in released upstream clang
-#myconf_gn+=" is_clang=true clang_base_path=\"/usr\" clang_use_chrome_plugins=false"
-myconf_gn+=" is_clang=false"
+myconf_gn+=" is_clang=true clang_base_path=\"/usr\" clang_use_chrome_plugins=false"
+#myconf_gn+=" is_clang=false"
 %endif
 %else
 myconf_gn+=" is_clang=false"
