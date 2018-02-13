@@ -49,7 +49,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	65.0.3325.18
+Version: 	66.0.3343.3
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -72,7 +72,6 @@ Source100:	%{name}.rpmlintrc
 Patch0:         chromium-56.0.2924.87-gcc5.patch
 Patch1:         chromium-45.0.2454.101-linux-path-max.patch
 Patch2:         chromium-55.0.2883.75-addrfix.patch
-Patch3:		chromium-65-no-git-dependency.patch
 Patch4:         chromium-46.0.2490.71-notest.patch
 # Ignore broken nacl open fd counter
 Patch7:         chromium-47.0.2526.80-nacl-ignore-broken-fd-counter.patch
@@ -339,6 +338,8 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/angle/src/third_party/compiler' \
 	'third_party/angle/src/third_party/libXNVCtrl' \
 	'third_party/angle/src/third_party/trace_event' \
+	'third_party/angle/third_party/glslang' \
+	'third_party/angle/third_party/vulkan-validation-layers' \
 	'third_party/blanketjs' \
 	'third_party/boringssl' \
 	'third_party/boringssl/src/third_party/fiat' \
@@ -409,7 +410,6 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/pdfium/third_party/agg23' \
 	'third_party/pdfium/third_party/base' \
 	'third_party/pdfium/third_party/bigint' \
-	'third_party/pdfium/third_party/build' \
 	'third_party/pdfium/third_party/libopenjpeg20' \
 	'third_party/pdfium/third_party/freetype' \
 	'third_party/polymer' \
