@@ -49,7 +49,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	66.0.3343.3
+Version: 	68.0.3432.3
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
