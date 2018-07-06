@@ -1,0 +1,17 @@
+diff -up chromium-69.0.3472.3/build/config/compiler/BUILD.gn.omv~ chromium-69.0.3472.3/build/config/compiler/BUILD.gn
+--- chromium-69.0.3472.3/build/config/compiler/BUILD.gn.omv~	2018-07-06 22:50:23.987806222 +0200
++++ chromium-69.0.3472.3/build/config/compiler/BUILD.gn	2018-07-06 22:50:35.233806641 +0200
+@@ -673,13 +673,6 @@ config("compiler") {
+     ldflags += [ "-Wl,--no-rosegment" ]
+   }
+ 
+-  # This flag enforces that member pointer base types are complete. It helps
+-  # prevent us from running into problems in the Microsoft C++ ABI (see
+-  # https://crbug.com/847724).
+-  if (is_clang && !is_nacl && target_os != "chromeos" && !use_xcode_clang) {
+-    cflags += [ "-fcomplete-member-pointers" ]
+-  }
+-
+   # Pass the same C/C++ flags to the objective C/C++ compiler.
+   cflags_objc += cflags_c
+   cflags_objcc += cflags_cc
