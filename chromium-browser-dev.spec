@@ -51,7 +51,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	69.0.3472.3
+Version: 	70.0.3521.2
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -93,7 +93,7 @@ Patch18:        https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromiu
 Patch20:        https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-67.0.3396.62-gn-system.patch
 # Fix last commit position issue
 # https://groups.google.com/a/chromium.org/forum/#!topic/gn-dev/7nlJv486bD4
-Patch21:        https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-53.0.2785.92-last-commit-position.patch
+#Patch21:        https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-53.0.2785.92-last-commit-position.patch
 # Fix issue where timespec is not defined when sys/stat.h is included.
 Patch22:        https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-53.0.2785.92-boringssl-time-fix.patch
 # I wouldn't have to do this if there was a standard way to append extra compiler flags
@@ -154,9 +154,6 @@ Patch94:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-66.0.
 # instead of the preferred alignment. This means int64_t is now 4 on i686 (instead of 8).
 # Use __alignof__ to get the value we expect (and chromium checks for).
 Patch98:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-66.0.3359.170-gcc8-alignof.patch
-# RHEL 7 has a bug in its python2.7 which does not propely handle exec with a tuple
-# https://bugs.python.org/issue21591
-Patch100:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-67.0.3396.62-epel7-use-old-python-exec-syntax.patch
 
 ### Chromium Tests Patches ###
 # suse, system libs
@@ -508,7 +505,6 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'v8/src/third_party/utf8-decoder' \
 	'v8/src/third_party/valgrind' \
 	'v8/third_party/inspector_protocol' \
-	'v8/third_party/antlr4' \
 	--do-remove
 
 # Look, I don't know. This package is spit and chewing gum. Sorry.
@@ -538,54 +534,6 @@ export CXX=clang++
 # gn is rather convoluted and not python3 friendly -- let's make
 # sure it sees python2 when it calls python
 export PATH=`pwd`:$PATH
-
-myconf_gn=" use_sysroot=false is_debug=false use_gold=true"
-myconf_gn+=" is_clang=true clang_base_path=\"%{_prefix}\" clang_use_chrome_plugins=false "
-myconf_gn+=" treat_warnings_as_errors=false"
-myconf_gn+=" use_system_libjpeg=true "
-myconf_gn+=" use_system_lcms2=true "
-myconf_gn+=" use_system_libpng=true "
-%if %mdvver >= 201500
-myconf_gn+=" use_system_harfbuzz=true "
-%endif
-myconf_gn+=" use_gnome_keyring=false "
-myconf_gn+=" fatal_linker_warnings=false "
-myconf_gn+=" system_libdir=\"%{_lib}\""
-myconf_gn+=" use_allocator=\"none\""
-myconf_gn+=" use_aura=true "
-#myconf_gn+=" use_gio=true"
-myconf_gn+=" icu_use_data_file=true"
-%if %{with gtk3}
-myconf_gn+=" use_gtk3=true "
-%else
-myconf_gn+=" use_gtk3=false "
-%endif
-%if %{with ozone}
-myconf_gn+=" use_ozone=true "
-%endif
-myconf_gn+=" enable_nacl=false "
-myconf_gn+=" proprietary_codecs=true "
-myconf_gn+=" ffmpeg_branding=\"ChromeOS\" "
-myconf_gn+=" enable_ac3_eac3_audio_demuxing=true "
-myconf_gn+=" enable_hevc_demuxing=true "
-myconf_gn+=" enable_mse_mpeg2ts_stream_parser=true "
-%ifarch i586
-myconf_gn+=" target_cpu=\"x86\""
-%endif
-%ifarch x86_64
-myconf_gn+=" target_cpu=\"x64\""
-%endif
-%ifarch %arm
-myconf_gn+=" target_cpu=\"arm\""
-myconf_gn+=" remove_webcore_debug_symbols=true"
-myconf_gn+=" rtc_build_with_neon=true"
-%endif
-%ifarch aarch64
-myconf_gn+=" target_cpu=\"arm64\""
-%endif
-myconf_gn+=" google_api_key=\"%{google_api_key}\""
-myconf_gn+=" google_default_client_id=\"%{google_default_client_id}\""
-myconf_gn+=" google_default_client_secret=\"%{google_default_client_secret}\""
 
 # Set system libraries to be used
 gn_system_libraries="
@@ -618,7 +566,7 @@ gn_system_libraries+=" ffmpeg"
 %endif
 python2 build/linux/unbundle/replace_gn_files.py --system-libraries ${gn_system_libraries}
 
-python2 tools/gn/bootstrap/bootstrap.py -v --gn-gen-args "${myconf_gn}"
+python2 tools/gn/bootstrap/bootstrap.py -v --gn-gen-args
 
 python2 third_party/libaddressinput/chromium/tools/update-strings.py
 

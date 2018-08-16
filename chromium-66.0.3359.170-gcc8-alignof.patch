@@ -1,8 +1,8 @@
-diff -up chromium-66.0.3359.170/mojo/public/c/system/macros.h.gcc8-alignof chromium-66.0.3359.170/mojo/public/c/system/macros.h
---- chromium-66.0.3359.170/mojo/public/c/system/macros.h.gcc8-alignof	2018-05-15 14:58:46.448912634 -0400
-+++ chromium-66.0.3359.170/mojo/public/c/system/macros.h	2018-05-15 14:58:52.041784613 -0400
-@@ -18,7 +18,13 @@
- #endif
+diff -up chromium-70.0.3521.2/mojo/public/c/system/macros.h.0098~ chromium-70.0.3521.2/mojo/public/c/system/macros.h
+--- chromium-70.0.3521.2/mojo/public/c/system/macros.h.0098~	2018-08-16 01:39:36.753440695 +0200
++++ chromium-70.0.3521.2/mojo/public/c/system/macros.h	2018-08-16 01:40:30.824775301 +0200
+@@ -27,7 +27,13 @@
+   (sizeof(void*) == 4 ? 32 : 0)
  
  // Like the C++11 |alignof| operator.
 -#if __cplusplus >= 201103L

@@ -1,7 +1,7 @@
-diff -up chromium-55.0.2883.75/sandbox/linux/BUILD.gn.sandboxpie chromium-55.0.2883.75/sandbox/linux/BUILD.gn
---- chromium-55.0.2883.75/sandbox/linux/BUILD.gn.sandboxpie	2016-12-01 18:02:17.000000000 -0500
-+++ chromium-55.0.2883.75/sandbox/linux/BUILD.gn	2016-12-12 16:26:06.863426221 -0500
-@@ -279,11 +279,17 @@ if (is_linux) {
+diff -up chromium-70.0.3521.2/sandbox/linux/BUILD.gn.0015~ chromium-70.0.3521.2/sandbox/linux/BUILD.gn
+--- chromium-70.0.3521.2/sandbox/linux/BUILD.gn.0015~	2018-08-16 00:37:25.988265285 +0200
++++ chromium-70.0.3521.2/sandbox/linux/BUILD.gn	2018-08-16 00:38:23.626544439 +0200
+@@ -315,10 +315,16 @@ if (is_linux) {
        # For ULLONG_MAX
        "-std=gnu99",
  
@@ -11,20 +11,10 @@ diff -up chromium-55.0.2883.75/sandbox/linux/BUILD.gn.sandboxpie chromium-55.0.2
        # TODO fix this and re-enable this warning.
        "-Wno-sign-compare",
      ]
- 
++
 +    ldflags = [
 +      "-pie",
 +    ]
-+
-     import("//build/config/compiler/compiler.gni")
-     import("//build/config/sanitizers/sanitizers.gni")
-     if (is_component_build || using_sanitizer) {
-@@ -293,7 +299,7 @@ if (is_linux) {
-       # other flags that executable_config might have.
-       configs -= [ "//build/config:executable_config" ]
-       if (!use_gold) {
--        ldflags = [ "-Wl,--disable-new-dtags" ]
-+        ldflags += [ "-Wl,--disable-new-dtags" ]
-       }
-     }
+   }
+ }
  

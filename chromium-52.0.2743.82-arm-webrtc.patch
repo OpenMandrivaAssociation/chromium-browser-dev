@@ -1,8 +1,9 @@
---- chromium-63.0.3230.0/third_party/webrtc/system_wrappers/source/cpu_features.cc.0016~	2017-10-09 19:07:22.113723328 +0200
-+++ chromium-63.0.3230.0/third_party/webrtc/system_wrappers/source/cpu_features.cc	2017-10-09 19:09:23.100996328 +0200
-@@ -18,6 +18,47 @@
- 
- #include "typedefs.h"  // NOLINT(build/include)
+diff -up chromium-70.0.3521.2/third_party/webrtc/system_wrappers/source/cpu_features.cc.0016~ chromium-70.0.3521.2/third_party/webrtc/system_wrappers/source/cpu_features.cc
+--- chromium-70.0.3521.2/third_party/webrtc/system_wrappers/source/cpu_features.cc.0016~	2018-08-16 00:40:01.251022430 +0200
++++ chromium-70.0.3521.2/third_party/webrtc/system_wrappers/source/cpu_features.cc	2018-08-16 01:31:44.740328392 +0200
+@@ -17,6 +17,46 @@
+ #include <intrin.h>
+ #endif
  
 +#include <elf.h>
 +#ifdef __arm__
@@ -44,7 +45,6 @@
 +	return 0 | have_neon; // others here as we need them
 +}
 +#endif
-+
+ 
  // No CPU feature is available => straight C path.
  int GetCPUInfoNoASM(CPUFeature feature) {
-   (void)feature;
