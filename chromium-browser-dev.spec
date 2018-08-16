@@ -324,6 +324,54 @@ cmp $FILE $FILE.orig && exit 1
 # sure it sees python2 when it calls python
 ln -s %{_bindir}/python2 python
 
+myconf_gn=" use_sysroot=false is_debug=false use_gold=true"
+myconf_gn+=" is_clang=true clang_base_path=\"%{_prefix}\" clang_use_chrome_plugins=false "
+myconf_gn+=" treat_warnings_as_errors=false"
+myconf_gn+=" use_system_libjpeg=true "
+myconf_gn+=" use_system_lcms2=true "
+myconf_gn+=" use_system_libpng=true "
+%if %mdvver >= 201500
+myconf_gn+=" use_system_harfbuzz=true "
+%endif
+myconf_gn+=" use_gnome_keyring=false "
+myconf_gn+=" fatal_linker_warnings=false "
+myconf_gn+=" system_libdir=\"%{_lib}\""
+myconf_gn+=" use_allocator=\"none\""
+myconf_gn+=" use_aura=true "
+#myconf_gn+=" use_gio=true"
+myconf_gn+=" icu_use_data_file=true"
+%if %{with gtk3}
+myconf_gn+=" use_gtk3=true "
+%else
+myconf_gn+=" use_gtk3=false "
+%endif
+%if %{with ozone}
+myconf_gn+=" use_ozone=true "
+%endif
+myconf_gn+=" enable_nacl=false "
+myconf_gn+=" proprietary_codecs=true "
+myconf_gn+=" ffmpeg_branding=\"ChromeOS\" "
+myconf_gn+=" enable_ac3_eac3_audio_demuxing=true "
+myconf_gn+=" enable_hevc_demuxing=true "
+myconf_gn+=" enable_mse_mpeg2ts_stream_parser=true "
+%ifarch i586
+myconf_gn+=" target_cpu=\"x86\""
+%endif
+%ifarch x86_64
+myconf_gn+=" target_cpu=\"x64\""
+%endif
+%ifarch %arm
+myconf_gn+=" target_cpu=\"arm\""
+myconf_gn+=" remove_webcore_debug_symbols=true"
+myconf_gn+=" rtc_build_with_neon=true"
+%endif
+%ifarch aarch64
+myconf_gn+=" target_cpu=\"arm64\""
+%endif
+myconf_gn+=" google_api_key=\"%{google_api_key}\""
+myconf_gn+=" google_default_client_id=\"%{google_default_client_id}\""
+myconf_gn+=" google_default_client_secret=\"%{google_default_client_secret}\""
+
 # use the system nodejs
 mkdir -p third_party/node/linux/node-linux-x64/bin
 ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
@@ -501,6 +549,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
         'third_party/yasm' \
         'third_party/zlib' \
 	'third_party/zlib/google' \
+	'tools/gn/base/third_party/icu' \
 	'url/third_party/mozilla' \
 	'v8/src/third_party/utf8-decoder' \
 	'v8/src/third_party/valgrind' \
@@ -566,7 +615,7 @@ gn_system_libraries+=" ffmpeg"
 %endif
 python2 build/linux/unbundle/replace_gn_files.py --system-libraries ${gn_system_libraries}
 
-python2 tools/gn/bootstrap/bootstrap.py -v --gn-gen-args
+python2 tools/gn/bootstrap/bootstrap.py
 
 python2 third_party/libaddressinput/chromium/tools/update-strings.py
 
