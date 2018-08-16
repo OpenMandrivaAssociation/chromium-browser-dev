@@ -170,6 +170,7 @@ Patch121:	chromium-69-work-with-upstream-clang.patch
 #Patch122:	chromium-63-gn-bootstrap.patch
 #Patch124:	chromium-61.0.3163.100-atk-compile.patch
 Patch125:	chromium-64-system-curl.patch
+Patch126:	chromium-70-no-static-libstdc++.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
