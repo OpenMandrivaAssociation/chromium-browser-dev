@@ -1,6 +1,6 @@
-diff -up chromium-81.0.4044.9/third_party/perfetto/gn/BUILD.gn.17~ chromium-81.0.4044.9/third_party/perfetto/gn/BUILD.gn
---- chromium-81.0.4044.9/third_party/perfetto/gn/BUILD.gn.17~	2020-02-09 22:34:37.020867460 +0100
-+++ chromium-81.0.4044.9/third_party/perfetto/gn/BUILD.gn	2020-02-09 22:43:03.876834270 +0100
+diff -up chromium-81.0.4044.92/third_party/perfetto/gn/BUILD.gn.17~ chromium-81.0.4044.92/third_party/perfetto/gn/BUILD.gn
+--- chromium-81.0.4044.92/third_party/perfetto/gn/BUILD.gn.17~	2020-04-12 15:32:26.125149888 +0200
++++ chromium-81.0.4044.92/third_party/perfetto/gn/BUILD.gn	2020-04-12 15:33:39.545967688 +0200
 @@ -294,7 +294,7 @@ if (enable_perfetto_zlib) {
        public_configs = [ "//buildtools:zlib_config" ]
        public_deps = [ "//buildtools:zlib" ]
