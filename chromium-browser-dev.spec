@@ -52,7 +52,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	85.0.4183.15
+Version: 	85.0.4183.26
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -532,6 +532,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/webrtc/rtc_base/third_party/sigslot' \
 	'third_party/widevine' \
         'third_party/woff2' \
+	'third_party/xcbproto' \
         'third_party/xdg-utils' \
         'third_party/zlib' \
 	'third_party/zlib/google' \
