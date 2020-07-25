@@ -52,7 +52,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	85.0.4183.26
+Version: 	86.0.4209.2
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -108,8 +108,6 @@ Patch54:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-77.0.
 Patch55:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-79.0.3945.56-base-gcc-no-alignas.patch
 # https://gitweb.gentoo.org/repo/gentoo.git/tree/www-client/chromium/files/chromium-78-protobuf-export.patch
 Patch57:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-78-protobuf-export.patch
-# https://gitweb.gentoo.org/repo/gentoo.git/plain/www-client/chromium/files/chromium-77-clang.patch
-Patch59:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-77-clang.patch
 # /../../ui/base/cursor/ozone/bitmap_cursor_factory_ozone.cc:53:15: error: 'find_if' is not a member of 'std'; did you mean 'find'? 
 #Patch63:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-79.0.3945.56-fix-find_if.patch
 
@@ -151,6 +149,8 @@ Patch1007:	chromium-81-enable-gpu-features.patch
 # stop so many build warnings
 Patch1008:	chromium-71.0.3578.94-quieten.patch
 Patch1009:	chromium-trace.patch
+# Don't use compiler flags that don't exist in upstream clang
+Patch1010:	chromium-86-no-custom-clang.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
@@ -356,7 +356,6 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/breakpad' \
 	'third_party/breakpad/breakpad/src/third_party/curl' \
 	'third_party/brotli' \
-	'third_party/cacheinvalidation' \
 	'third_party/catapult' \
 	'third_party/catapult/common/py_vulcanize/third_party/rcssmin' \
 	'third_party/catapult/common/py_vulcanize/third_party/rjsmin' \
@@ -389,7 +388,12 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/devtools-frontend/src/front_end/third_party/acorn' \
 	'third_party/devtools-frontend/src/front_end/third_party/codemirror' \
 	'third_party/devtools-frontend/src/front_end/third_party/fabricjs' \
+	'third_party/devtools-frontend/src/front_end/third_party/i18n' \
+	'third_party/devtools-frontend/src/front_end/third_party/intl-messageformat' \
 	'third_party/devtools-frontend/src/front_end/third_party/lighthouse' \
+	'third_party/devtools-frontend/src/front_end/third_party/lit-html' \
+	'third_party/devtools-frontend/src/front_end/third_party/lodash-isequal' \
+	'third_party/devtools-frontend/src/front_end/third_party/marked' \
 	'third_party/devtools-frontend/src/front_end/third_party/wasmparser' \
 	'third_party/dom_distiller_js' \
 	'third_party/emoji-segmenter' \
@@ -456,6 +460,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 %endif
 	'third_party/modp_b64' \
 	'third_party/nasm' \
+	'third_party/nearby' \
 	'third_party/node' \
 	'third_party/node/node_modules/polymer-bundler/lib/third_party/UglifyJS2' \
 	'third_party/one_euro_filter' \
@@ -491,6 +496,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 %endif
 	'third_party/rnnoise' \
 	'third_party/schema_org' \
+	'third_party/securemessage' \
 	'third_party/s2cellid' \
 	'third_party/simplejson' \
 	'third_party/sinonjs' \
@@ -514,6 +520,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/swiftshader/third_party/SPIRV-Headers' \
 	'third_party/tcmalloc' \
 	'third_party/test_fonts' \
+        'third_party/ukey2' \
         'third_party/usb_ids' \
 	'third_party/usrsctp' \
 	'third_party/vulkan' \
