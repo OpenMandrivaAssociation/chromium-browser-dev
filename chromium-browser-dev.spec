@@ -53,7 +53,7 @@ Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
 Version: 	86.0.4209.2
-Release: 	1%{?extrarelsuffix}
+Release: 	2%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
 License: 	BSD, LGPL
@@ -754,9 +754,8 @@ install -m 0644 %{SOURCE3} %{buildroot}%{_sysconfdir}/chromium
 # FIXME ultimately Chromium should just use the system version
 # instead of looking in its own directory... But for now, symlinking
 # stuff where Chromium wants it will do
-mkdir -p %{buildroot}%{_libdir}/%{name}/swiftshader
-ln -s %{_libdir}/libGLESv2.so.2.0.0 %{buildroot}%{_libdir}/%{name}/swiftshader/libGLESv2.so
-ln -s %{_libdir}/libEGL.so.1.0.0 %{buildroot}%{_libdir}/%{name}/swiftshader/libEGL.so
+ln -s %{_libdir}/libGLESv2.so.2.1.0 %{buildroot}%{_libdir}/%{name}/libGLESv2.so
+ln -s %{_libdir}/libEGL.so.1.1.0 %{buildroot}%{_libdir}/%{name}/libEGL.so
 
 find %{buildroot} -name "*.nexe" -exec strip {} \;
 
