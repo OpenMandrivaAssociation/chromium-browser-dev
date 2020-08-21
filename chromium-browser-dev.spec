@@ -52,8 +52,8 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	86.0.4209.2
-Release: 	2%{?extrarelsuffix}
+Version: 	86.0.4238.0
+Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
 License: 	BSD, LGPL
@@ -136,14 +136,12 @@ Patch653:	chromium-skia-harmony.patch
 # mga
 Patch700:	chromium-81-extra-media.patch
 Patch701:	chromium-69-wmvflvmpg.patch
-Patch702:	chromium-40-sorenson-spark.patch
 
 # omv
 Patch1001:	chromium-64-system-curl.patch
 Patch1002:	chromium-69-no-static-libstdc++.patch
 Patch1003:	chromium-83-norar.patch
 #Patch1004:	chromium-80-clang10-libstdc++10.patch
-Patch1006:	chromium-81-dont-pretend-vaapi-is-broken.patch
 Patch1007:	chromium-81-enable-gpu-features.patch
 
 # stop so many build warnings
@@ -386,6 +384,7 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/devtools-frontend/src/third_party/typescript' \
 	'third_party/devtools-frontend/src/third_party/axe-core' \
 	'third_party/devtools-frontend/src/front_end/third_party/acorn' \
+	'third_party/devtools-frontend/src/front_end/third_party/chromium' \
 	'third_party/devtools-frontend/src/front_end/third_party/codemirror' \
 	'third_party/devtools-frontend/src/front_end/third_party/fabricjs' \
 	'third_party/devtools-frontend/src/front_end/third_party/i18n' \
@@ -514,7 +513,6 @@ python2 build/linux/unbundle/remove_bundled_libraries.py \
 	'third_party/swiftshader' \
 	'third_party/swiftshader/third_party/astc-encoder' \
 	'third_party/swiftshader/third_party/llvm-subzero' \
-	'third_party/swiftshader/third_party/llvm-7.0' \
 	'third_party/swiftshader/third_party/marl' \
 	'third_party/swiftshader/third_party/subzero' \
 	'third_party/swiftshader/third_party/SPIRV-Headers' \

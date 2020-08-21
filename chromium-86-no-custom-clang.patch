@@ -1,7 +1,7 @@
-diff -up chromium-86.0.4209.2/build/config/compiler/BUILD.gn.34~ chromium-86.0.4209.2/build/config/compiler/BUILD.gn
---- chromium-86.0.4209.2/build/config/compiler/BUILD.gn.34~	2020-07-23 12:54:49.000000000 +0200
-+++ chromium-86.0.4209.2/build/config/compiler/BUILD.gn	2020-07-24 23:36:40.757403937 +0200
-@@ -396,14 +396,6 @@ config("compiler") {
+diff -up chromium-86.0.4238.0/build/config/compiler/BUILD.gn.32~ chromium-86.0.4238.0/build/config/compiler/BUILD.gn
+--- chromium-86.0.4238.0/build/config/compiler/BUILD.gn.32~	2020-08-19 11:52:56.000000000 +0200
++++ chromium-86.0.4238.0/build/config/compiler/BUILD.gn	2020-08-21 02:48:31.501920496 +0200
+@@ -395,14 +395,6 @@ config("compiler") {
          "-Wl,--as-needed",
        ]
      }
@@ -16,18 +16,3 @@ diff -up chromium-86.0.4209.2/build/config/compiler/BUILD.gn.34~ chromium-86.0.4
    }
  
    # Linux-specific compiler flags setup.
-@@ -1065,14 +1057,6 @@ config("compiler_codegen") {
-     ldflags += [ "-Wl,-mllvm,-enable-machine-outliner=never" ]
-   }
- 
--  if (is_clang && !is_nacl && !use_xcode_clang && !is_chromeos_device) {
--    cflags += [
--      # TODO(thakis): Remove after next clang roll, see reviews.llvm.org/D82998
--      "-mllvm",
--      "-basic-aa-recphi=0",
--    ]
--  }
--
-   # TODO(thakis): Remove `if (!is_win)` after next clang roll.
-   if (!is_win) {
-     asmflags = cflags
