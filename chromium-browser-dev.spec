@@ -234,6 +234,7 @@ BuildRequires: 	pkgconfig(opus)
 BuildRequires: 	pkgconfig(libwebp)
 BuildRequires: 	pkgconfig(speex)
 BuildRequires:	pkgconfig(lcms2)
+BuildRequires:	pkgconfig(openh264)
 %if %{with system_minizip}
 BuildRequires: 	pkgconfig(minizip)
 %endif
