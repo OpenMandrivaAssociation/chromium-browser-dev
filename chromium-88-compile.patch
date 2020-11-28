@@ -10,3 +10,28 @@ diff -up chromium-88.0.4300.0/third_party/dawn/src/common/ityp_array.h.omv~ chro
      class array : private std::array<Value, Size> {
          using I = UnderlyingType<Index>;
          using Base = std::array<Value, Size>;
+diff -up chromium-88.0.4324.11/ui/accessibility/platform/inspect/tree_formatter.h.omv~ chromium-88.0.4324.11/ui/accessibility/platform/inspect/tree_formatter.h
+--- chromium-88.0.4324.11/ui/accessibility/platform/inspect/tree_formatter.h.omv~	2020-11-28 05:00:12.030910353 +0100
++++ chromium-88.0.4324.11/ui/accessibility/platform/inspect/tree_formatter.h	2020-11-28 05:00:22.489041733 +0100
+@@ -9,6 +9,9 @@
+ 
+ #include "ui/gfx/native_widget_types.h"
+ 
++#include <vector>
++#include <memory>
++
+ namespace base {
+ class Value;
+ class DictionaryValue;
+diff -up chromium-88.0.4324.11/third_party/blink/renderer/platform/wtf/text/text_codec_icu.cc.omv~ chromium-88.0.4324.11/third_party/blink/renderer/platform/wtf/text/text_codec_icu.cc
+--- chromium-88.0.4324.11/third_party/blink/renderer/platform/wtf/text/text_codec_icu.cc.omv~	2020-11-28 14:05:40.376472971 +0100
++++ chromium-88.0.4324.11/third_party/blink/renderer/platform/wtf/text/text_codec_icu.cc	2020-11-28 14:05:46.119539093 +0100
+@@ -432,7 +432,7 @@ String TextCodecICU::Decode(const char*
+   // ICU decodes it as U+E5E5.
+   if (!strcmp(encoding_.GetName(), "GBK")) {
+     if (EqualIgnoringASCIICase(encoding_.GetName(), "gb18030"))
+-      resultString.Replace(0xE5E5, ideographicSpaceCharacter);
++      resultString.Replace(0xE5E5, kIdeographicSpaceCharacter);
+     // Make GBK compliant to the encoding spec and align with GB18030
+     resultString.Replace(0x01F9, 0xE7C8);
+     // FIXME: Once https://www.w3.org/Bugs/Public/show_bug.cgi?id=28740#c3

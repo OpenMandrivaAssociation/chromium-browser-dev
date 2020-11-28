@@ -1,0 +1,12 @@
+diff -up chromium-88.0.4324.11/cc/metrics/compositor_frame_reporter.cc.omv~ chromium-88.0.4324.11/cc/metrics/compositor_frame_reporter.cc
+--- chromium-88.0.4324.11/cc/metrics/compositor_frame_reporter.cc.omv~	2020-11-28 04:21:21.620029876 +0100
++++ chromium-88.0.4324.11/cc/metrics/compositor_frame_reporter.cc	2020-11-28 04:21:29.590136611 +0100
+@@ -671,7 +671,7 @@ void CompositorFrameReporter::ReportComp
+ 
+ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
+   for (const auto& event_metrics : events_metrics_) {
+-    DCHECK_NE(event_metrics, nullptr);
++    DCHECK_NE(event_metrics.get(), nullptr);
+     const std::string histogram_base_name =
+         GetEventLatencyHistogramBaseName(*event_metrics);
+     const int event_type_index = static_cast<int>(event_metrics->type());

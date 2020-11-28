@@ -56,7 +56,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	88.0.4300.0
+Version: 	88.0.4324.11
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -125,8 +125,6 @@ Patch550:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chrom
 Patch551:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-86-ImageMemoryBarrierData-init.patch
 Patch552:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-87-CursorFactory-include.patch
 Patch553:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-87-compiler.patch
-Patch554:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-86-nearby-explicit.patch
-Patch555:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-86-nearby-include.patch
 Patch556:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-fix-char_traits.patch
 Patch557:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-78-protobuf-RepeatedPtrField-export.patch
 Patch558:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-79-gcc-protobuf-alignas.patch
@@ -144,7 +142,6 @@ Patch602:	https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/extra/
 # Partially based on https://aur.archlinux.org/packages/chromium-vaapi/
 Patch651:	vdpau-support.patch
 Patch652:	https://aur.archlinux.org/cgit/aur.git/plain/chromium-skia-harmony.patch
-Patch653:	https://aur.archlinux.org/cgit/aur.git/plain/wayland-egl.patch
 
 # mga
 Patch700:	chromium-81-extra-media.patch
@@ -155,11 +152,10 @@ Patch1001:	chromium-64-system-curl.patch
 Patch1002:	chromium-69-no-static-libstdc++.patch
 Patch1003:	chromium-88-compile.patch
 #Patch1004:	chromium-80-clang10-libstdc++10.patch
+Patch1005:	chromium-88-compilerfixes.patch
 # FIXME port
 #Patch1007:	chromium-81-enable-gpu-features.patch
 
-# stop so many build warnings
-Patch1008:	chromium-71.0.3578.94-quieten.patch
 #Patch1009:	chromium-trace.patch
 
 Provides: 	%{crname}
