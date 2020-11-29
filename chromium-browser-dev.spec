@@ -236,6 +236,7 @@ BuildRequires: 	pkgconfig(speex)
 BuildRequires:	pkgconfig(lcms2)
 BuildRequires:	pkgconfig(openh264)
 BuildRequires:	pkgconfig(libunwind)
+BuildRequires:	pkgconfig(re2)
 %if %{with system_minizip}
 BuildRequires: 	pkgconfig(minizip)
 %endif
