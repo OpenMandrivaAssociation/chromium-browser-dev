@@ -37,14 +37,14 @@
 # crisb - ozone causes a segfault on startup as of 57.0.2987.133, doesn't compile in 80.x
 %bcond_with	ozone
 # Breaks the build as of chromium 83, icu 66.1
-%bcond_with	system_icu
+%bcond_without	system_icu
 %bcond_without	system_ffmpeg
 # Temporarily broken, cr_z_* symbols used even when we're supposed to use system minizip
 %bcond_without	system_minizip
 # chromium 58 fails with system vpx 1.6.1
-%bcond_with	system_vpx
+%bcond_without	system_vpx
 # system re2 doesn't work with custom libcxx
-%bcond_with	system_re2
+%bcond_without	system_re2
 
 # Always support proprietary codecs
 # or html5 does not work
@@ -56,7 +56,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	88.0.4324.11
+Version: 	90.0.4412.3
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -80,8 +80,6 @@ Patch1:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-68.0.
 Patch2:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-67.0.3396.62-gn-system.patch
 # Do not prefix libpng functions
 Patch4:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-60.0.3112.78-no-libpng-prefix.patch
-# Do not mangle libjpeg
-Patch5:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-60.0.3112.78-jpeg-nomangle.patch
 # Do not mangle zlib
 Patch6:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-77.0.3865.75-no-zlib-mangle.patch
 # Use Gentoo's Widevine hack
@@ -97,8 +95,6 @@ Patch11:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-79.0.
 Patch12:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-71.0.3578.98-py2-bootstrap.patch
 # Add "Fedora" to the user agent string
 #Patch13:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-79.0.3945.56-fedora-user-agent.patch
-# rename function to avoid conflict with rawhide glibc "gettid()"
-Patch50:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-75.0.3770.80-grpc-gettid-fix.patch
 # Needs to be submitted..
 Patch51:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-76.0.3809.100-gcc-remoting-constexpr.patch
 # https://gitweb.gentoo.org/repo/gentoo.git/tree/www-client/chromium/files/chromium-unbundle-zlib.patch
@@ -123,14 +119,12 @@ Patch54:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-77.0.
 # https://github.com/stha09/chromium-patches
 Patch550:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-86-ConsumeDurationNumber-constexpr.patch
 Patch551:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-86-ImageMemoryBarrierData-init.patch
-Patch552:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-87-CursorFactory-include.patch
 Patch553:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-87-compiler.patch
-Patch556:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-fix-char_traits.patch
+Patch554:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-86-nearby-explicit.patch
+Patch555:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-86-nearby-include.patch
 Patch557:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-78-protobuf-RepeatedPtrField-export.patch
-Patch558:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-79-gcc-protobuf-alignas.patch
 Patch559:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-80-QuicStreamSendBuffer-deleted-move-constructor.patch
 Patch560:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-84-blink-disable-clang-format.patch
-Patch561:	https://raw.githubusercontent.com/stha09/chromium-patches/master/chromium-87-openscreen-include.patch
 
 ### Chromium Tests Patches ###
 # suse, system libs
@@ -139,9 +133,15 @@ Patch600:	arm_use_right_compiler.patch
 Patch602:	https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/extra/chromium/chromium-system-icu.patch
 
 # Enable VAAPI support on Linux
-# Partially based on https://aur.archlinux.org/packages/chromium-vaapi/
-Patch651:	vdpau-support.patch
-Patch652:	https://aur.archlinux.org/cgit/aur.git/plain/chromium-skia-harmony.patch
+Patch650:	https://raw.githubusercontent.com/saiarcot895/chromium-ubuntu-build/master/debian/patches/enable-vaapi-on-linux.diff
+Patch651:	https://raw.githubusercontent.com/saiarcot895/chromium-ubuntu-build/master/debian/patches/vdpau-support.patch
+Patch652:	chromium-88-default-video-acceleration-on.patch
+
+# Fixes from Arch
+Patch660:	https://aur.archlinux.org/cgit/aur.git/plain/chromium-skia-harmony.patch
+Patch661:	https://aur.archlinux.org/cgit/aur.git/plain/wayland-egl.patch
+Patch662:	https://aur.archlinux.org/cgit/aur.git/plain/chromium-glibc-2.33.patch
+
 
 # mga
 Patch700:	chromium-81-extra-media.patch
@@ -150,13 +150,10 @@ Patch701:	chromium-69-wmvflvmpg.patch
 # omv
 Patch1001:	chromium-64-system-curl.patch
 Patch1002:	chromium-69-no-static-libstdc++.patch
-Patch1003:	chromium-88-compile.patch
-#Patch1004:	chromium-80-clang10-libstdc++10.patch
-Patch1005:	chromium-88-compilerfixes.patch
-# FIXME port
-#Patch1007:	chromium-81-enable-gpu-features.patch
-
-#Patch1009:	chromium-trace.patch
+Patch1003:	chromium-system-zlib.patch
+Patch1004:	chromium-88-less-blacklist-nonsense.patch
+Patch1005:	chromium-90-compilefixes.patch
+Patch1007:	chromium-81-enable-gpu-features.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
@@ -168,6 +165,8 @@ BuildRequires: 	re2c
 BuildRequires: 	flex
 BuildRequires:	pkgconfig(alsa)
 BuildRequires:	pkgconfig(krb5)
+BuildRequires:	pkgconfig(openh264)
+BuildRequires:	pkgconfig(libunwind)
 %if %{with system_re2}
 BuildRequires:	pkgconfig(re2)
 %endif
@@ -210,6 +209,7 @@ BuildRequires:	gtk+2.0-devel
 BuildRequires: 	pkgconfig(nspr)
 BuildRequires: 	pkgconfig(zlib)
 BuildRequires: 	pkgconfig(xscrnsaver)
+BuildRequires:	pkgconfig(xshmfence)
 BuildRequires: 	pkgconfig(glu)
 BuildRequires: 	pkgconfig(gl)
 BuildRequires: 	cups-devel
@@ -234,9 +234,6 @@ BuildRequires: 	pkgconfig(opus)
 BuildRequires: 	pkgconfig(libwebp)
 BuildRequires: 	pkgconfig(speex)
 BuildRequires:	pkgconfig(lcms2)
-BuildRequires:	pkgconfig(openh264)
-BuildRequires:	pkgconfig(libunwind)
-BuildRequires:	pkgconfig(re2)
 %if %{with system_minizip}
 BuildRequires: 	pkgconfig(minizip)
 %endif
@@ -511,6 +508,9 @@ install -m 0644 %{SOURCE3} %{buildroot}%{_sysconfdir}/chromium
 # stuff where Chromium wants it will do
 ln -s %{_libdir}/libGLESv2.so.2.1.0 %{buildroot}%{_libdir}/%{name}/libGLESv2.so
 ln -s %{_libdir}/libEGL.so.1.1.0 %{buildroot}%{_libdir}/%{name}/libEGL.so
+mkdir -p %{buildroot}%{_libdir}/%{name}/swiftshader
+ln -s %{_libdir}/libGLESv2.so.2.1.0 %{buildroot}%{_libdir}/%{name}/swiftshader/libGLESv2.so
+ln -s %{_libdir}/libEGL.so.1.1.0 %{buildroot}%{_libdir}/%{name}/swiftshader/libEGL.so
 
 find %{buildroot} -name "*.nexe" -exec strip {} \;
 
@@ -537,6 +537,7 @@ cp %{S:4} %{buildroot}%{_datadir}/drirc.d/10-%{name}.conf
 %{_libdir}/%{name}/chrome_100_percent.pak
 %{_libdir}/%{name}/resources.pak
 %{_libdir}/%{name}/resources
+%{_libdir}/%{name}/swiftshader
 %{_libdir}/%{name}/themes
 %{_libdir}/%{name}/default_apps
 %{_datadir}/applications/*.desktop

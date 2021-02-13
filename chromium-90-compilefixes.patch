@@ -1,0 +1,93 @@
+diff -up chromium-90.0.4412.3/build/config/compiler/BUILD.gn.omv~ chromium-90.0.4412.3/build/config/compiler/BUILD.gn
+--- chromium-90.0.4412.3/build/config/compiler/BUILD.gn.omv~	2021-02-12 17:15:12.358857000 +0100
++++ chromium-90.0.4412.3/build/config/compiler/BUILD.gn	2021-02-12 17:15:29.826888650 +0100
+@@ -714,23 +714,6 @@ config("compiler") {
+     }
+   }
+ 
+-  # Pin to LLVM's legacy pass manager so we can switch independently of a Clang roll.
+-  # TODO(https://crbug.com/1173188): remove once we've rolled a Clang with the new PM as the default PM.
+-  if (is_clang && !is_nacl && !use_xcode_clang &&
+-      default_toolchain != "//build/toolchain/cros:target") {
+-    cflags += [
+-      "-Xclang",
+-      "-fno-experimental-new-pass-manager",
+-    ]
+-    if (use_thin_lto) {
+-      if (is_win) {
+-        ldflags += [ "-opt:noltonewpassmanager" ]
+-      } else if (!is_mac) {
+-        ldflags += [ "-Wl,--lto-legacy-pass-manager" ]
+-      }
+-    }
+-  }
+-
+   # This flag enforces that member pointer base types are complete. It helps
+   # prevent us from running into problems in the Microsoft C++ ABI (see
+   # https://crbug.com/847724).
+diff -up chromium-90.0.4412.3/ui/gfx/rendering_stage_scheduler.h.omv~ chromium-90.0.4412.3/ui/gfx/rendering_stage_scheduler.h
+--- chromium-90.0.4412.3/ui/gfx/rendering_stage_scheduler.h.omv~	2021-02-12 18:15:19.458596941 +0100
++++ chromium-90.0.4412.3/ui/gfx/rendering_stage_scheduler.h	2021-02-12 18:15:24.940612240 +0100
+@@ -5,6 +5,7 @@
+ #ifndef UI_GFX_RENDERING_STAGE_SCHEDULER_H_
+ #define UI_GFX_RENDERING_STAGE_SCHEDULER_H_
+ 
++#include <memory>
+ #include <vector>
+ 
+ #include "base/threading/platform_thread.h"
+diff -up chromium-90.0.4412.3/components/autofill/core/browser/data_model/contact_info.h.omv~ chromium-90.0.4412.3/components/autofill/core/browser/data_model/contact_info.h
+--- chromium-90.0.4412.3/components/autofill/core/browser/data_model/contact_info.h.omv~	2021-02-12 20:35:06.318360157 +0100
++++ chromium-90.0.4412.3/components/autofill/core/browser/data_model/contact_info.h	2021-02-12 20:35:13.675353160 +0100
+@@ -6,6 +6,7 @@
+ #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_CONTACT_INFO_H_
+ 
+ #include <string>
++#include <memory>
+ #include <vector>
+ 
+ #include "base/compiler_specific.h"
+diff -up chromium-90.0.4412.3/components/viz/service/display/delegated_ink_point_renderer_base.h.omv~ chromium-90.0.4412.3/components/viz/service/display/delegated_ink_point_renderer_base.h
+--- chromium-90.0.4412.3/components/viz/service/display/delegated_ink_point_renderer_base.h.omv~	2021-02-12 23:05:56.317089148 +0100
++++ chromium-90.0.4412.3/components/viz/service/display/delegated_ink_point_renderer_base.h	2021-02-12 23:06:01.817221685 +0100
+@@ -11,6 +11,7 @@
+ #include <vector>
+ 
+ #include "base/optional.h"
++#include "components/viz/service/display/delegated_ink_trail_data.h"
+ #include "components/viz/service/viz_service_export.h"
+ #include "mojo/public/cpp/bindings/receiver.h"
+ #include "services/viz/public/mojom/compositing/delegated_ink_point.mojom.h"
+diff -up chromium-90.0.4412.3/components/viz/service/display/direct_renderer.h.omv~ chromium-90.0.4412.3/components/viz/service/display/direct_renderer.h
+--- chromium-90.0.4412.3/components/viz/service/display/direct_renderer.h.omv~	2021-02-12 23:05:01.879722098 +0100
++++ chromium-90.0.4412.3/components/viz/service/display/direct_renderer.h	2021-02-12 23:05:07.350864192 +0100
+@@ -15,6 +15,7 @@
+ #include "base/macros.h"
+ #include "base/optional.h"
+ #include "build/build_config.h"
++#include "components/viz/service/display/delegated_ink_trail_data.h"
+ #include "components/viz/common/delegated_ink_metadata.h"
+ #include "components/viz/common/quads/aggregated_render_pass.h"
+ #include "components/viz/common/quads/tile_draw_quad.h"
+diff -up chromium-90.0.4412.3/components/viz/service/display/gl_renderer.h.omv~ chromium-90.0.4412.3/components/viz/service/display/gl_renderer.h
+--- chromium-90.0.4412.3/components/viz/service/display/gl_renderer.h.omv~	2021-02-12 23:03:56.799944694 +0100
++++ chromium-90.0.4412.3/components/viz/service/display/gl_renderer.h	2021-02-12 23:04:05.866202337 +0100
+@@ -17,6 +17,7 @@
+ #include "base/containers/queue.h"
+ #include "base/macros.h"
+ #include "build/build_config.h"
++#include "components/viz/service/display/delegated_ink_trail_data.h"
+ #include "components/viz/common/gpu/context_cache_controller.h"
+ #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+ #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
+diff -up chromium-90.0.4412.3/ui/accessibility/ax_tree_serializer.h.omv~ chromium-90.0.4412.3/ui/accessibility/ax_tree_serializer.h
+--- chromium-90.0.4412.3/ui/accessibility/ax_tree_serializer.h.omv~	2021-02-13 01:57:30.955848283 +0100
++++ chromium-90.0.4412.3/ui/accessibility/ax_tree_serializer.h	2021-02-13 01:59:23.058509478 +0100
+@@ -12,6 +12,7 @@
+ #include <unordered_map>
+ #include <unordered_set>
+ #include <vector>
++#include <ctime>
+ 
+ #include "base/debug/crash_logging.h"
+ #include "base/debug/dump_without_crashing.h"
