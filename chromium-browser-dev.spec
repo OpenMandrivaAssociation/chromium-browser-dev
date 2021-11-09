@@ -43,9 +43,9 @@
 
 # Libraries that should be unbundled
 #global system_libs icu fontconfig harfbuzz-ng libjpeg libpng snappy libdrm ffmpeg flac libwebp zlib libxml libxslt re2 libusb libevent freetype opus openh264
-# KNOWN TO WORK:  global system_libs zlib ffmpeg fontconfig harfbuzz-ng libjpeg libpng
+# KNOWN TO WORK:  global system_libs zlib ffmpeg fontconfig harfbuzz-ng libjpeg libpng libdrm flac libwebp
 # KNOWN TO BREAK: global system_libs zlib ffmpeg fontconfig harfbuzz-ng libjpeg libpng libdrm flac libwebp libxml libxslt libevent opus openh264
-%global system_libs zlib ffmpeg fontconfig harfbuzz-ng libjpeg libpng
+%global system_libs zlib ffmpeg fontconfig harfbuzz-ng libjpeg libpng libdrm flac libwebp
 # FIXME add libvpx
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys
