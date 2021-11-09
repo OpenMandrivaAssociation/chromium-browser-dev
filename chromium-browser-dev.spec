@@ -16,15 +16,36 @@
 %define crname chromium-browser
 %define _crdir %{_libdir}/%{crname}
 %define _src %{_topdir}/SOURCES
-%define	debug_package %nil
+# For incomplete debug package support
+#define	_empty_manifest_terminate_build 0
 
 %ifarch %ix86
 %define _build_pkgcheck_set %{nil}
 %endif
 
+# FIXME As of 97.0.4688.2, Chromium crashes frequently when
+# built with fortification enabled.
+# [3784233:1:1107/202853.599120:ERROR:socket.cc(93)] sendmsg: Broken pipe (32)
+# Received signal 11 <unknown> 03e900000001
+#0 0x55af1960e344 (/usr/lib64/chromium-browser-dev/chrome+0x9071343)
+#1 0x7fa28e947790 (/lib64/libc.so.6+0x4578f)
+#2 0x7fa28e92e4f0 abort
+#3 0x7fa28e98edc6 (/lib64/libc.so.6+0x8cdc5)
+#4 0x7fa28ea386e2 __fortify_fail
+#5 0x7fa28ea386b2 __stack_chk_fail
+#6 0x55af1446e459 (/usr/lib64/chromium-browser-dev/chrome+0x3ed1458)
+#7 0x7fa28e92fd8c (/lib64/libc.so.6+0x2dd8b)
+#8 0x7fa28e92fe39 __libc_start_main
+#9 0x55af140ab121 _start
+# This should be investigated properly at some point.
+%define _fortify_cflags %{nil}
+%define _ssp_cflags %{nil}
+
 # Libraries that should be unbundled
 #global system_libs icu fontconfig harfbuzz-ng libjpeg libpng snappy libdrm ffmpeg flac libwebp zlib libxml libxslt re2 libusb libevent freetype opus openh264
-%global system_libs icu fontconfig libjpeg libpng snappy libdrm ffmpeg flac libwebp zlib libxml libxslt libusb libevent opus openh264
+# KNOWN TO WORK:  global system_libs zlib ffmpeg fontconfig harfbuzz-ng libjpeg libpng
+# KNOWN TO BREAK: global system_libs zlib ffmpeg fontconfig harfbuzz-ng libjpeg libpng libdrm flac libwebp libxml libxslt libevent opus openh264
+%global system_libs zlib ffmpeg fontconfig harfbuzz-ng libjpeg libpng
 # FIXME add libvpx
 
 # Set up Google API keys, see http://www.chromium.org/developers/how-tos/api-keys
@@ -57,7 +78,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	97.0.4682.3
+Version: 	97.0.4688.2
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -73,6 +94,7 @@ Source3:	master_preferences
 Source4:	chromium-drirc-disable-10bpc-color-configs.conf
 Source100:	%{name}.rpmlintrc
 
+%if 0
 ### Chromium Fedora Patches ###
 Patch0:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-70.0.3538.67-sandbox-pie.patch
 # Use /etc/chromium for master_prefs
@@ -114,11 +136,13 @@ Patch103:	https://raw.githubusercontent.com/archlinux/svntogit-packages/packages
 #Patch300:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-76.0.3809.132-rhel8-force-disable-use_gnome_keyring.patch
 
 #Patch501:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-75.0.3770.80-SIOCGSTAMP.patch
+%endif
 
 ### Chromium gcc/libstdc++ support ###
 # https://github.com/stha09/chromium-patches
-Source500:	https://github.com/stha09/chromium-patches/releases/download/chromium-97-patchset-2/chromium-97-patchset-2.tar.xz
+Source500:	https://github.com/stha09/chromium-patches/releases/download/chromium-97-patchset-3/chromium-97-patchset-3.tar.xz
 
+%if 0
 ### Chromium Tests Patches ###
 # Arch Linux, fix for compile error with system ICU
 Patch602:	https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/extra/chromium/chromium-system-icu.patch
@@ -135,9 +159,9 @@ Patch1001:	chromium-64-system-curl.patch
 Patch1002:	chromium-69-no-static-libstdc++.patch
 Patch1003:	chromium-system-zlib.patch
 Patch1004:	chromium-88-less-blacklist-nonsense.patch
-Patch1006:	chromium-92-fix-bogus-assert.patch
 Patch1007:	chromium-81-enable-gpu-features.patch
-Patch1008:	sql-VirtualCursor-standard-layout.patch
+%endif
+Patch1006:	https://raw.githubusercontent.com/ungoogled-software/ungoogled-chromium-fedora/master/chromium-91.0.4472.77-java-only-allowed-in-android-builds.patch
 Patch1009:	chromium-97-compilefixes.patch
 Patch1010:	chromium-97-ffmpeg-4.4.1.patch
 
@@ -273,7 +297,7 @@ members of the Chromium and WebDriver teams.
 %autosetup -p1 -n chromium-%{version}
 tar xf %{S:500}
 for i in patches/*; do
-	patch -p1 -z .st509~ -b <$i
+	patch -p1 -z .stha09~ -b <$i
 done
 
 rm -rf third_party/binutils/
