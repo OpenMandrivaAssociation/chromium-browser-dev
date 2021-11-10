@@ -78,7 +78,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	97.0.4688.2
+Version: 	97.0.4692.8
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -159,6 +159,7 @@ Patch1003:	chromium-system-zlib.patch
 Patch1004:	chromium-88-less-blacklist-nonsense.patch
 Patch1007:	chromium-81-enable-gpu-features.patch
 %endif
+Patch0:		chromium-patches-rebase.patch
 Patch2:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-67.0.3396.62-gn-system.patch
 Patch1002:	chromium-69-no-static-libstdc++.patch
 Patch1006:	https://raw.githubusercontent.com/ungoogled-software/ungoogled-chromium-fedora/master/chromium-91.0.4472.77-java-only-allowed-in-android-builds.patch
@@ -253,6 +254,7 @@ BuildRequires:	pkgconfig(libexif)
 BuildRequires:	ninja
 BuildRequires:	nodejs
 BuildRequires:	jdk-current
+BuildRequires:	python3dist(markupsafe)
 
 %description
 Chromium is a browser that combines a minimal design with sophisticated
@@ -294,10 +296,13 @@ members of the Chromium and WebDriver teams.
 
 
 %prep
-%autosetup -p1 -n chromium-%{version}
-tar xf %{S:500}
+%autosetup -p1 -n chromium-%{version} -a 500
+j=1
 for i in patches/*; do
-	patch -p1 -z .stha09~ -b <$i
+	if basename $i |grep -qE '~$'; then continue; fi
+	echo "Applying `basename $i`"
+	patch -p1 -z .stha09-${j}~ -b <$i
+	j=$((j+1))
 done
 
 rm -rf third_party/binutils/
