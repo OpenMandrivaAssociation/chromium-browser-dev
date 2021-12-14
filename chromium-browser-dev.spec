@@ -78,7 +78,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	98.0.4736.0
+Version: 	98.0.4750.0
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -94,7 +94,6 @@ Source3:	master_preferences
 Source4:	chromium-drirc-disable-10bpc-color-configs.conf
 Source100:	%{name}.rpmlintrc
 
-%if 0
 ### Chromium Fedora Patches ###
 Patch0:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-70.0.3538.67-sandbox-pie.patch
 # Use /etc/chromium for master_prefs
@@ -109,6 +108,7 @@ Patch6:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-77.0.
 Patch8:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-71.0.3578.98-widevine-r3.patch
 # Try to load widevine from other places
 Patch11:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-79.0.3945.56-widevine-other-locations.patch
+%if 0
 # Add "Fedora" to the user agent string
 #Patch13:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-79.0.3945.56-fedora-user-agent.patch
 # https://gitweb.gentoo.org/repo/gentoo.git/tree/www-client/chromium/files/chromium-unbundle-zlib.patch
@@ -117,29 +117,18 @@ Patch53:	chromium-81-unbundle-zlib.patch
 Patch54:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-77.0.3865.75-gcc-include-memory.patch
 # /../../ui/base/cursor/ozone/bitmap_cursor_factory_ozone.cc:53:15: error: 'find_if' is not a member of 'std'; did you mean 'find'? 
 #Patch63:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-79.0.3945.56-fix-find_if.patch
+%endif
 
 # From Arch and Gentoo
 # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=chromium-dev
-Patch100:	https://raw.githubusercontent.com/gentoo/gentoo/master/www-client/chromium/files/chromium-96-EnumTable-crash.patch
+#Patch100:	https://raw.githubusercontent.com/gentoo/gentoo/master/www-client/chromium/files/chromium-96-EnumTable-crash.patch
 Patch101:	https://raw.githubusercontent.com/gentoo/gentoo/master/www-client/chromium/files/chromium-93-InkDropHost-crash.patch
 Patch102:	https://raw.githubusercontent.com/gentoo/gentoo/master/www-client/chromium/files/chromium-shim_headers.patch
 Patch103:	https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/chromium/trunk/use-oauth2-client-switches-as-default.patch
 
-
-# Use lstdc++ on EPEL7 only
-#Patch101:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-75.0.3770.100-epel7-stdc++.patch
-# el7 only patch
-#Patch102:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-79.0.3945.56-el7-noexcept.patch
-
-# Apply these patches to work around EPEL8 issues
-#Patch300:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-76.0.3809.132-rhel8-force-disable-use_gnome_keyring.patch
-
-#Patch501:	https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-75.0.3770.80-SIOCGSTAMP.patch
-%endif
-
 ### Chromium gcc/libstdc++ support ###
 # https://github.com/stha09/chromium-patches
-Source500:	https://github.com/stha09/chromium-patches/releases/download/chromium-98-patchset-1/chromium-98-patchset-1.tar.xz
+Source500:	https://github.com/stha09/chromium-patches/releases/download/chromium-98-patchset-3/chromium-98-patchset-3.tar.xz
 
 %if 0
 ### Chromium Tests Patches ###
@@ -298,8 +287,6 @@ members of the Chromium and WebDriver teams.
 %prep
 %autosetup -p1 -n chromium-%{version} -a 500
 j=1
-# This patch is obsolete
-rm patches/chromium-97-ScrollView-reference.patch
 for i in patches/*; do
 	if basename $i |grep -qE '~$'; then continue; fi
 	echo "Applying `basename $i`"
