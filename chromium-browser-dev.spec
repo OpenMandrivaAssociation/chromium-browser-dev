@@ -435,6 +435,12 @@ if echo %{__cc} | grep -q clang; then
 	export CFLAGS="%{optflags} -Qunused-arguments -fPIE -fpie -fPIC"
 	export CXXFLAGS="%{optflags} -Qunused-arguments -fPIE -fpie -fPIC"
 	_lto_cpus="$(getconf _NPROCESSORS_ONLN)"
+	if [ $_lto_cpus -gt 4 ]; then
+		# LTO is very memory intensive, so
+		# 32 parallel LTO jobs may not be
+		# a good idea...
+		_lto_cpus=4
+	fi
 	export LDFLAGS="%{ldflags} -Wl,--thinlto-jobs=$_lto_cpus"
 	export AR="llvm-ar"
 	export NM="llvm-nm"
