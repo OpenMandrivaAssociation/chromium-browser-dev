@@ -434,6 +434,12 @@ CHROMIUM_BROWSER_GN_DEFINES+=" use_vaapi=true"
 if echo %{__cc} | grep -q clang; then
 	export CFLAGS="%{optflags} -Qunused-arguments -fPIE -fpie -fPIC"
 	export CXXFLAGS="%{optflags} -Qunused-arguments -fPIE -fpie -fPIC"
+	if echo %{optflags} |grep -qE -- '-O[sz]'; then
+		# FIXME this should get a real fix
+		# _Float32 acts up with -Os/-Oz
+		export CFLAGS="$CFLAGS -O2"
+		export CXXFLAGS="$CXXFLAGS -O2"
+	fi
 	_lto_cpus="$(getconf _NPROCESSORS_ONLN)"
 	if [ $_lto_cpus -gt 4 ]; then
 		# LTO is very memory intensive, so
