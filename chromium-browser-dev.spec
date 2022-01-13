@@ -78,7 +78,7 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	98.0.4758.9
+Version: 	99.0.4818.0
 Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
@@ -128,7 +128,7 @@ Patch103:	https://raw.githubusercontent.com/archlinux/svntogit-packages/packages
 
 ### Chromium gcc/libstdc++ support ###
 # https://github.com/stha09/chromium-patches
-Source500:	https://github.com/stha09/chromium-patches/releases/download/chromium-98-patchset-4/chromium-98-patchset-4.tar.xz
+Source500:	https://github.com/stha09/chromium-patches/releases/download/chromium-99-patchset-1/chromium-99-patchset-1.tar.xz
 
 %if 0
 ### Chromium Tests Patches ###
@@ -154,6 +154,7 @@ Patch1006:	https://raw.githubusercontent.com/ungoogled-software/ungoogled-chromi
 Patch1008:	chromium-98-system-libdrm.patch
 Patch1009:	chromium-97-compilefixes.patch
 Patch1010:	chromium-97-ffmpeg-4.4.1.patch
+Patch1011:	chromium-99-system-opus.patch
 
 Provides: 	%{crname}
 Obsoletes: 	chromium-browser-unstable < 26.0.1410.51
