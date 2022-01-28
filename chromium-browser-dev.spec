@@ -78,8 +78,8 @@
 Name: 		chromium-browser-%{channel}
 # Working version numbers can be found at
 # http://omahaproxy.appspot.com/
-Version: 	99.0.4818.0
-Release: 	2%{?extrarelsuffix}
+Version: 	99.0.4840.0
+Release: 	1%{?extrarelsuffix}
 Summary: 	A fast webkit-based web browser
 Group: 		Networking/WWW
 License: 	BSD, LGPL
@@ -128,9 +128,8 @@ Patch103:	https://raw.githubusercontent.com/archlinux/svntogit-packages/packages
 
 ### Chromium gcc/libstdc++ support ###
 # https://github.com/stha09/chromium-patches
-Source500:	https://github.com/stha09/chromium-patches/releases/download/chromium-99-patchset-1/chromium-99-patchset-1.tar.xz
+Source500:	https://github.com/stha09/chromium-patches/releases/download/chromium-99-patchset-2/chromium-99-patchset-2.tar.xz
 
-%if 0
 ### Chromium Tests Patches ###
 # Arch Linux, fix for compile error with system ICU
 Patch602:	https://raw.githubusercontent.com/archlinuxarm/PKGBUILDs/master/extra/chromium/chromium-system-icu.patch
@@ -147,7 +146,6 @@ Patch1001:	chromium-64-system-curl.patch
 Patch1003:	chromium-system-zlib.patch
 Patch1004:	chromium-88-less-blacklist-nonsense.patch
 Patch1007:	chromium-81-enable-gpu-features.patch
-%endif
 Patch2:		https://src.fedoraproject.org/rpms/chromium/raw/master/f/chromium-67.0.3396.62-gn-system.patch
 Patch1002:	chromium-69-no-static-libstdc++.patch
 Patch1006:	https://raw.githubusercontent.com/ungoogled-software/ungoogled-chromium-fedora/master/chromium-91.0.4472.77-java-only-allowed-in-android-builds.patch

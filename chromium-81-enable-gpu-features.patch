@@ -1,7 +1,7 @@
-diff -up chromium-89.0.4389.47/gpu/config/gpu_finch_features.cc.35~ chromium-89.0.4389.47/gpu/config/gpu_finch_features.cc
---- chromium-89.0.4389.47/gpu/config/gpu_finch_features.cc.35~	2021-02-12 13:42:27.193118296 +0100
-+++ chromium-89.0.4389.47/gpu/config/gpu_finch_features.cc	2021-02-12 13:43:19.683803909 +0100
-@@ -78,11 +78,12 @@ const base::FeatureParam<std::string> kL
+diff -up chromium-99.0.4840.0/gpu/config/gpu_finch_features.cc.15~ chromium-99.0.4840.0/gpu/config/gpu_finch_features.cc
+--- chromium-99.0.4840.0/gpu/config/gpu_finch_features.cc.15~	2022-01-28 17:28:03.509291683 +0100
++++ chromium-99.0.4840.0/gpu/config/gpu_finch_features.cc	2022-01-28 18:14:37.460099550 +0100
+@@ -122,11 +122,12 @@ const base::FeatureParam<std::string>
  // Enable GPU Rasterization by default. This can still be overridden by
  // --enable-gpu-rasterization or --disable-gpu-rasterization.
  // DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS, and
@@ -10,18 +10,18 @@ diff -up chromium-89.0.4389.47/gpu/config/gpu_finch_features.cc.35~ chromium-89.
 +// Linux doesn't mean we have to.
  const base::Feature kDefaultEnableGpuRasterization{
    "DefaultEnableGpuRasterization",
- #if defined(OS_MAC) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
--    defined(OS_ANDROID) || defined(OS_FUCHSIA)
-+    defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_LINUX)
+ #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
++    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
        base::FEATURE_ENABLED_BY_DEFAULT
  #else
        base::FEATURE_DISABLED_BY_DEFAULT
-@@ -108,7 +109,7 @@ const base::Feature kDirectCompositionUs
+@@ -155,7 +156,7 @@ const base::Feature kGpuProcessHighPrior
  // Use ThreadPriority::DISPLAY for GPU main, viz compositor and IO threads.
  const base::Feature kGpuUseDisplayThreadPriority{
    "GpuUseDisplayThreadPriority",
--#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
-+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_LINUX)
+-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
++#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
        base::FEATURE_ENABLED_BY_DEFAULT
  #else
        base::FEATURE_DISABLED_BY_DEFAULT
