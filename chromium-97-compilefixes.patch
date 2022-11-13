@@ -1,39 +1,6 @@
-diff -up chromium-99.0.4818.0/sandbox/linux/services/credentials.cc.14~ chromium-99.0.4818.0/sandbox/linux/services/credentials.cc
---- chromium-99.0.4818.0/sandbox/linux/services/credentials.cc.14~	2022-01-10 08:02:33.000000000 +0100
-+++ chromium-99.0.4818.0/sandbox/linux/services/credentials.cc	2022-01-12 14:31:20.502098289 +0100
-@@ -100,7 +100,8 @@ bool ChrootToSafeEmptyDir() {
-   // TODO(crbug.com/1247458) Broken in MSan builds after LLVM f1bb30a4956f.
-   clone_flags |= CLONE_VM | CLONE_VFORK | CLONE_SETTLS;
- 
--  char tls_buf[PTHREAD_STACK_MIN] = {0};
-+  char *tls_buf = new char[PTHREAD_STACK_MIN];
-+  *tls_buf = 0;
-   tls = tls_buf;
- #endif
- 
-@@ -111,6 +112,7 @@ bool ChrootToSafeEmptyDir() {
-   int status = -1;
-   PCHECK(HANDLE_EINTR(waitpid(pid, &status, 0)) == pid);
- 
-+  delete[] tls_buf;
-   return WIFEXITED(status) && WEXITSTATUS(status) == kExitSuccess;
- }
- 
-diff -up chromium-99.0.4818.0/third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.cc.14~ chromium-99.0.4818.0/third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.cc
---- chromium-99.0.4818.0/third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.cc.14~	2022-01-12 14:31:20.501098284 +0100
-+++ chromium-99.0.4818.0/third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.cc	2022-01-12 14:37:08.427741630 +0100
-@@ -138,7 +138,7 @@ void InstallAlternateStackLocked() {
-   // SIGSTKSZ may be too small to prevent the signal handlers from overrunning
-   // the alternative stack. Ensure that the size of the alternative stack is
-   // large enough.
--  const unsigned kSigStackSize = std::max<unsigned>(16384, SIGSTKSZ);
-+  const unsigned kSigStackSize = std::max<unsigned>(16384L, SIGSTKSZ);
- 
-   // Only set an alternative stack if there isn't already one, or if the current
-   // one is too small.
-diff -up chromium-99.0.4818.0/third_party/zlib/google/zip_internal.cc.14~ chromium-99.0.4818.0/third_party/zlib/google/zip_internal.cc
---- chromium-99.0.4818.0/third_party/zlib/google/zip_internal.cc.14~	2022-01-10 08:02:57.000000000 +0100
-+++ chromium-99.0.4818.0/third_party/zlib/google/zip_internal.cc	2022-01-12 14:31:20.502098289 +0100
+diff -up chromium-97.0.4682.3/third_party/zlib/google/zip_internal.cc.omv~ chromium-97.0.4682.3/third_party/zlib/google/zip_internal.cc
+--- chromium-97.0.4682.3/third_party/zlib/google/zip_internal.cc.omv~	2021-11-02 22:51:01.799596700 +0100
++++ chromium-97.0.4682.3/third_party/zlib/google/zip_internal.cc	2021-11-02 22:52:16.428670047 +0100
 @@ -177,7 +177,7 @@ void* OpenZipBuffer(void* opaque, const
  
  // Reads compressed data from the specified stream. This function copies data
